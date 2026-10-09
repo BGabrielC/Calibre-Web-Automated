@@ -70,9 +70,9 @@ ALL_ROLES = {
                 "viewer_role": ROLE_VIEWER,
             }
 
-THEME_CALIBLUR          = 1
+# F1 Dark is the only theme; it is a skin built on caliBlur (1), which is no longer selectable
 THEME_F1                = 2
-VALID_THEMES            = (THEME_CALIBLUR, THEME_F1)
+VALID_THEMES            = (THEME_F1,)
 DEFAULT_THEME           = THEME_F1
 
 

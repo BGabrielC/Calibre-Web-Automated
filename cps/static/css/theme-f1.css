@@ -265,8 +265,22 @@ body.theme-f1 .discover .shelf-actions .btn.active {
 
 /* ---------- Book grid ---------- */
 
-body.theme-f1 .book .cover img,
-body.theme-f1 .book .cover .img img {
+/* Every cover fills the same 2:3 slot, stretched rather than cropped so nothing is cut off.
+   :is(#books, ...) outranks caliBlur's id selectors that pin the image to 150px. */
+body.theme-f1 :is(#books, #books_rand, .book) .cover span.img {
+    display: block !important;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+}
+
+body.theme-f1 :is(#books, #books_rand, .book) .cover span.img img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    object-fit: fill !important;
     border-radius: 10px !important;
     background: var(--f1-card) !important;
     box-shadow: 0 6px 20px rgba(0, 0, 0, .55);

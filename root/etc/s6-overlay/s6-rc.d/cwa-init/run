@@ -184,8 +184,8 @@ then
 fi
 
 #------------------------------------------------------------------------------------------------------------------------
-#  Theme migration: every user was forced onto caliBlur (1) until F1 Dark (2) became the default theme.
-#  Move everyone to F1 Dark once; afterwards only repair values that are not a valid theme.
+#  Theme migration: F1 Dark (2) is the only theme. Move everyone to it once; afterwards repair any other
+#  value (the retired light theme 0 or caliBlur 1).
 #------------------------------------------------------------------------------------------------------------------------
 
 echo "[cwa-init] Checking themes in app.db..."
@@ -196,7 +196,7 @@ import sqlite3
 
 db_path = "/config/app.db"
 marker = "/config/.cwa_theme_f1_default"
-valid = "(1, 2)"
+valid = "(2)"
 try:
   conn = sqlite3.connect(db_path)
   cur = conn.cursor()

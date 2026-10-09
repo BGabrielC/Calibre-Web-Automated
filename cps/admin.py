@@ -138,16 +138,9 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
-    try:
-        g.current_theme = getattr(current_user, 'theme', config.config_theme)
-        if current_user.is_anonymous and not hasattr(current_user, 'theme'):
-            g.current_theme = config.config_theme
-    except Exception:
-        g.current_theme = getattr(config, 'config_theme', 1)
-    # Every theme is built on caliBlur's markup; F1 Dark only adds its own stylesheet on top
-    g.theme_skin = 'f1' if g.current_theme == constants.THEME_F1 else None
+    # F1 Dark is the only theme: caliBlur's markup and styles (theme 1) with the F1 stylesheet on top
     g.current_theme = 1
+    g.theme_skin = 'f1'
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',

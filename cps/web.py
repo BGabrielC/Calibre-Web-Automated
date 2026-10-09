@@ -1643,11 +1643,12 @@ def series_list():
                                          page="serieslist",
                                          data="series", order=order_no)
         else:
+            # SQLite returns the bare Books columns from the row holding the min(), so each series
+            # is represented (and its cover drawn) by its first book
             entries = (calibre_db.session.query(db.Books, func.count('books_series_link').label('count'),
-                                                func.max(db.Books.series_index), db.Books.id)
+                                                func.min(db.Books.series_index), db.Books.id)
                        .join(db.books_series_link).join(db.Series).filter(calibre_db.common_filters())
                        .group_by(text('books_series_link.series'))
-                       .having(or_(func.max(db.Books.series_index), db.Books.series_index==""))
                        .order_by(order)
                        .all())
             return render_title_template('grid.html', entries=entries, folder='web.books_list', charlist=char_list,

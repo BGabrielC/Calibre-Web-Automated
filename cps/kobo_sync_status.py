@@ -39,6 +39,17 @@ def remove_synced_book(book_id, all=False, session=None):
         ub.session_commit(_session=session)
 
 
+# Remember a book that is about to be deleted for every user whose Kobo has it, so the next sync
+# can tell the device to remove it
+def mark_deleted_book(book):
+    synced = ub.session.query(ub.KoboSyncedBooks.user_id).filter(ub.KoboSyncedBooks.book_id == book.id).distinct()
+    for (user_id,) in synced.all():
+        ub.session.add(ub.KoboDeletedBook(user_id=user_id, book_id=book.id, book_uuid=str(book.uuid),
+                                          title=book.title, created=book.timestamp))
+    ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.book_id == book.id).delete()
+    ub.session_commit()
+
+
 def change_archived_books(book_id, state=None, message=None):
     archived_book = ub.session.query(ub.ArchivedBook).filter(and_(ub.ArchivedBook.user_id == int(current_user.id),
                                                                   ub.ArchivedBook.book_id == book_id)).first()

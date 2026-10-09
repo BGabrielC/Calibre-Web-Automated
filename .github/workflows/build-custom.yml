@@ -62,3 +62,10 @@ jobs:
           build-args: |
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ env.VERSION }}
+
+      - name: Delete old image versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: calibre-web-automated
+          package-type: container
+          min-versions-to-keep: 1

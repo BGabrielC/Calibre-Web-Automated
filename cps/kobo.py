@@ -14,6 +14,7 @@ import os
 import uuid
 import zipfile
 from time import gmtime, strftime
+from types import SimpleNamespace
 import json
 from urllib.parse import unquote
 
@@ -228,6 +229,15 @@ def HandleSyncRequest():
         except Exception as e:
             log.error(f"Kobo Sync: Error during deletion logic: {e}")
             ub.session.rollback()
+
+    # Books deleted from the library never show up in the queries below, so remove them from the device here
+    deleted_books = ub.session.query(ub.KoboDeletedBook).filter(ub.KoboDeletedBook.user_id == current_user.id).all()
+    if deleted_books:
+        log.info("Kobo Sync: removing %d deleted books from device for user %s", len(deleted_books), current_user.name)
+        for deleted_book in deleted_books:
+            sync_results.append({"ChangedEntitlement": get_deleted_book_entitlement(deleted_book)})
+            ub.session.delete(deleted_book)
+        ub.session_commit()
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
 
@@ -540,6 +550,35 @@ def create_book_entitlement(book, archived):
         "OriginCategory": "Imported",
         "RevisionId": book_uuid,
         "Status": "Active",
+    }
+
+
+def get_deleted_book_entitlement(deleted_book):
+    # The book is gone from metadata.db, so rebuild the removal from what was kept at deletion time
+    book_uuid = deleted_book.book_uuid
+    book = SimpleNamespace(uuid=book_uuid, timestamp=deleted_book.created, last_modified=datetime.now(timezone.utc))
+    return {
+        "BookEntitlement": create_book_entitlement(book, archived=True),
+        "BookMetadata": {
+            "Categories": ["00000000-0000-0000-0000-000000000001", ],
+            "CoverImageId": book_uuid,
+            "CrossRevisionId": book_uuid,
+            "CurrentDisplayPrice": {"CurrencyCode": "USD", "TotalAmount": 0},
+            "CurrentLoveDisplayPrice": {"TotalAmount": 0},
+            "DownloadUrls": [],
+            "EntitlementId": book_uuid,
+            "ExternalIds": [],
+            "Genre": "00000000-0000-0000-0000-000000000001",
+            "IsEligibleForKoboLove": False,
+            "IsInternetArchive": False,
+            "IsPreOrder": False,
+            "IsSocialEnabled": True,
+            "PhoneticPronunciations": {},
+            "Publisher": {"Imprint": "", "Name": ""},
+            "RevisionId": book_uuid,
+            "Title": deleted_book.title,
+            "WorkId": book_uuid,
+        },
     }
 
 

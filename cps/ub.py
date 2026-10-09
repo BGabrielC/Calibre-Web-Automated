@@ -603,6 +603,18 @@ class KoboSyncedBooks(Base):
     book_id = Column(Integer)
 
 
+# A book deleted from the library while it was on a user's Kobo. Its uuid is gone from metadata.db,
+# so it is kept here until the next sync tells the device to remove the book.
+class KoboDeletedBook(Base):
+    __tablename__ = 'kobo_deleted_book'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    book_id = Column(Integer)
+    book_uuid = Column(String)
+    title = Column(String)
+    created = Column(DateTime)
+
+
 def is_opds_shelf_exposed_for_user(user_id, shelf_id, _session=None):
     s = _session if _session else session
     return s.query(OpdsShelfExposure).filter_by(user_id=user_id, shelf_id=shelf_id).first() is not None

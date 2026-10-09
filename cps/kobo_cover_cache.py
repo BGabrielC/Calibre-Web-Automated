@@ -11,7 +11,7 @@ These functions are intentionally dependency-light so they can be tested without
 importing the full application package.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import uuid as uuidlib
 
@@ -47,3 +47,15 @@ def build_cover_image_id(base_id, *, use_google_drive, last_modified, cover_path
         return f"{base_id}-{cover_mtime}"
 
     return base_id
+
+
+def cover_changed_since(cover_path, since):
+    """Whether the local cover file was replaced after ``since`` (naive UTC, as stored in the sync token).
+
+    Kobo devices ignore a new CoverImageId sent in a ChangedEntitlement, so a book whose cover
+    changed after the device's last sync has to be sent as a NewEntitlement instead.
+    """
+    if not cover_path or not os.path.isfile(cover_path):
+        return False
+    cover_mtime = datetime.fromtimestamp(os.path.getmtime(cover_path), timezone.utc).replace(tzinfo=None)
+    return cover_mtime > since

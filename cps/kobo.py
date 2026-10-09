@@ -41,7 +41,7 @@ from . import config, logger, kobo_auth, db, calibre_db, helper, shelf as shelf_
 from . import isoLanguages
 from .epub import get_epub_layout
 from .constants import COVER_THUMBNAIL_SMALL, COVER_THUMBNAIL_MEDIUM, COVER_THUMBNAIL_LARGE, DEFAULT_PORT
-from .kobo_cover_cache import build_cover_image_id, normalize_cover_uuid
+from .kobo_cover_cache import build_cover_image_id, cover_changed_since, normalize_cover_uuid
 from .helper import get_download_link
 from .services import SyncToken as SyncToken, hardcover
 from .web import download_required
@@ -306,15 +306,23 @@ def HandleSyncRequest():
             "BookMetadata": get_metadata(book.Books),
         }
 
+        ts_created = get_kobo_created_ts(book)
+        # The device keeps its old cover on a ChangedEntitlement, so a book already on the device whose
+        # cover was replaced since the last sync is re-sent as new, carrying its reading state along
+        cover_replaced = (ts_created <= sync_token.books_last_created
+                          and _cover_changed_since_last_sync(book.Books, sync_token.books_last_modified))
+
         if (kobo_reading_state is not None
-                and kobo_reading_state.last_modified > sync_token.reading_state_last_modified):
+                and (cover_replaced
+                     or kobo_reading_state.last_modified > sync_token.reading_state_last_modified)):
             entitlement["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
 
-        ts_created = get_kobo_created_ts(book)
+        if cover_replaced:
+            log.debug("Kobo Sync: cover of book %s replaced since last sync, sending it as new", book.Books.id)
 
-        if ts_created > sync_token.books_last_created:
+        if ts_created > sync_token.books_last_created or cover_replaced:
             sync_results.append({"NewEntitlement": entitlement})
         else:
             sync_results.append({"ChangedEntitlement": entitlement})
@@ -580,6 +588,18 @@ def get_language(book):
 
 def _normalize_cover_uuid(image_id):
     return normalize_cover_uuid(image_id)
+
+
+def _cover_changed_since_last_sync(book, books_last_modified):
+    # Google Drive covers have no local file to check; their cover id follows book.last_modified instead
+    if config.config_use_google_drive:
+        return False
+    try:
+        cover_path = os.path.join(config.get_book_path(), book.path, "cover.jpg")
+        return cover_changed_since(cover_path, books_last_modified)
+    except Exception as exc:
+        log.debug("Kobo Sync: failed to check cover change for book %s: %s", book.id, exc)
+        return False
 
 
 def _get_cover_image_id(book):

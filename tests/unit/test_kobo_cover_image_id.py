@@ -80,3 +80,35 @@ class TestKoboCoverImageId:
             last_modified=last_modified,
             cover_path=None,
         ) == expected
+
+
+@pytest.mark.unit
+class TestKoboCoverChangedSince:
+    """A Kobo ignores a new CoverImageId in a ChangedEntitlement, so sync needs to know
+    whether the cover was replaced after the device's last sync."""
+
+    def _cover(self, tmp_path, mtime):
+        cover_file = tmp_path / "cover.jpg"
+        cover_file.write_bytes(b"test")
+        os.utime(cover_file, (mtime, mtime))
+        return str(cover_file)
+
+    def test_cover_newer_than_last_sync(self, tmp_path):
+        cover = self._cover(tmp_path, datetime(2026, 10, 9, 11, 51, 5, tzinfo=timezone.utc).timestamp())
+        assert kobo_cache.cover_changed_since(cover, datetime(2026, 10, 9, 11, 50, 19)) is True
+
+    def test_cover_older_than_last_sync(self, tmp_path):
+        cover = self._cover(tmp_path, datetime(2026, 9, 26, 12, 42, 27, tzinfo=timezone.utc).timestamp())
+        assert kobo_cache.cover_changed_since(cover, datetime(2026, 10, 9, 11, 50, 19)) is False
+
+    def test_since_is_compared_as_utc(self, tmp_path):
+        # Sync token timestamps are naive UTC; a local-time comparison would be off by the UTC offset
+        cover = self._cover(tmp_path, datetime(2026, 10, 9, 12, 0, 0, tzinfo=timezone.utc).timestamp())
+        assert kobo_cache.cover_changed_since(cover, datetime(2026, 10, 9, 11, 59, 0)) is True
+        assert kobo_cache.cover_changed_since(cover, datetime(2026, 10, 9, 12, 1, 0)) is False
+
+    def test_missing_cover(self, tmp_path):
+        assert kobo_cache.cover_changed_since(str(tmp_path / "cover.jpg"), datetime(2026, 1, 1)) is False
+
+    def test_no_cover_path(self):
+        assert kobo_cache.cover_changed_since(None, datetime(2026, 1, 1)) is False

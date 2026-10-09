@@ -145,6 +145,8 @@ def before_request():
             g.current_theme = config.config_theme
     except Exception:
         g.current_theme = getattr(config, 'config_theme', 1)
+    # Every theme is built on caliBlur's markup; F1 Dark only adds its own stylesheet on top
+    g.theme_skin = 'f1' if g.current_theme == constants.THEME_F1 else None
     g.current_theme = 1
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
@@ -899,6 +901,7 @@ def update_view_configuration():
     _config_int(to_save, "config_restricted_column")
 
     _config_int(to_save, "config_theme")
+    config.config_theme = constants.theme_or_default(config.config_theme)
     _config_int(to_save, "config_random_books")
     _config_int(to_save, "config_books_per_page")
     _config_int(to_save, "config_authors_max")
@@ -2508,11 +2511,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Force dark theme (caliBlur = 1) for new users
-    try:
-        content.theme = 1
-    except Exception:
-        pass
+    content.theme = constants.theme_or_default(to_save.get('theme', config.config_theme))
     try:
         if not to_save["name"] or not to_save["email"] or not to_save["password"]:
             log.info("Missing entries on new user")
@@ -2603,12 +2602,8 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user (force dark)
     if 'theme' in to_save:
-        try:
-            content.theme = 1
-        except Exception:
-            pass
+        content.theme = constants.theme_or_default(to_save['theme'])
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
     if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                             ub.User.id != content.id).count() and 'admin_role' not in to_save:

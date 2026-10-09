@@ -1,0 +1,501 @@
+/*
+ * F1 Dark theme: a skin loaded on top of caliBlur (body.theme-f1).
+ * Apple-style dark palette: true black background, grouped #1C1C1E surfaces,
+ * system fonts with a serif for large titles, translucent glass for the top bar.
+ */
+
+body.theme-f1 {
+    --f1-bg: #000000;
+    --f1-card: #1c1c1e;
+    --f1-elevated: #2c2c2e;
+    --f1-fill: rgba(118, 118, 128, .24);
+    --f1-fill-strong: rgba(118, 118, 128, .36);
+    --f1-text: #ffffff;
+    --f1-muted: rgba(235, 235, 245, .62);
+    --f1-faint: rgba(235, 235, 245, .3);
+    --f1-border: rgba(84, 84, 88, .65);
+    --f1-blue: #409cff;
+    --f1-green: #30db5b;
+    --f1-yellow: #ffd426;
+    --f1-red: #ff6961;
+    --f1-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --f1-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --f1-font-serif: ui-serif, "New York", Georgia, "Times New Roman", serif;
+
+    /* caliBlur and layout-refresh tokens, remapped */
+    --color-background: #000000;
+    --color-background-mobile: #000000;
+    --color-primary: #ffffff;
+    --color-secondary: #409cff;
+    --color-secondary-hover: #69b1ff;
+    --lr-surface: #1c1c1e;
+    --lr-drawer: #1c1c1e;
+    --lr-border: rgba(84, 84, 88, .65);
+    --lr-chip: rgba(118, 118, 128, .24);
+    --lr-chip-hover: rgba(118, 118, 128, .36);
+    --lr-text: #ffffff;
+    --lr-muted: rgba(235, 235, 245, .62);
+    --lr-accent: #409cff;
+    --lr-accent-soft: rgba(64, 156, 255, .18);
+}
+
+/* ---------- Base: black canvas and system fonts ---------- */
+
+body.theme-f1:not(.read-frame) {
+    background: var(--f1-bg) !important;
+    background-image: none !important;
+    color: var(--f1-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* caliBlur names Open Sans on individual elements, so the font is replaced element by element.
+   :where() keeps this rule at the lowest specificity so the title and icon rules below win. */
+body.theme-f1,
+body.theme-f1 :where(h1, h2, h3, h4, h5, h6, p, a, span, div, li, label, input, button, select, textarea,
+                     td, th, strong, b, em, small, dt, dd, legend):where(:not(.glyphicon, [class*="glyphicon-"], [class^="icon-"], [class*=" icon-"])) {
+    font-family: var(--f1-font) !important;
+}
+
+/* Elements whose icon glyph comes from their own font rather than a pseudo-element */
+body.theme-f1 .home-btn > a,
+body.theme-f1 .plexBack > a,
+body.theme-f1 .pagination .page-next > a,
+body.theme-f1 .pagination .page-previous > a {
+    font-family: plex-icons-new, serif !important;
+}
+
+body.theme-f1 .blur-wrapper,
+body.theme-f1 .blur-wrapper:before,
+body.theme-f1 .blur-wrapper:after {
+    background: var(--f1-bg) !important;
+    background-image: none !important;
+    filter: none !important;
+}
+
+body.theme-f1 a {
+    color: var(--f1-blue);
+}
+
+body.theme-f1 a:hover,
+body.theme-f1 a:focus {
+    color: #69b1ff;
+}
+
+body.theme-f1 :focus-visible {
+    outline: 2px solid var(--f1-blue);
+    outline-offset: 2px;
+}
+
+body.theme-f1 ::selection {
+    background: rgba(64, 156, 255, .4);
+}
+
+/* ---------- Top bar: translucent glass ---------- */
+
+body.theme-f1 > div.navbar.navbar-default.navbar-static-top {
+    background: rgba(22, 22, 24, .72) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    backdrop-filter: blur(28px) saturate(170%);
+    box-shadow: inset 0 -0.5px 0 rgba(255, 255, 255, .14);
+    border: 0;
+}
+
+body.theme-f1 > div.navbar .navbar-header > a.navbar-brand {
+    background: var(--f1-bg) !important;
+    color: var(--f1-text) !important;
+    font-family: var(--f1-font-display) !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.2px;
+}
+
+body.theme-f1 > div.navbar a,
+body.theme-f1 > div.navbar .glyphicon {
+    color: rgba(255, 255, 255, .78) !important;
+}
+
+body.theme-f1 > div.navbar a:hover,
+body.theme-f1 > div.navbar a:hover .glyphicon {
+    color: #ffffff !important;
+}
+
+body.theme-f1 > div.navbar form .form-group > input,
+body.theme-f1 #query {
+    background: var(--f1-fill) !important;
+    border-radius: 10px !important;
+    color: var(--f1-text) !important;
+    font-size: 15px !important;
+}
+
+body.theme-f1 > div.navbar form .form-group > input::placeholder {
+    color: var(--f1-muted) !important;
+}
+
+body.theme-f1 #top_admin > .glyphicon,
+body.theme-f1 #top_tasks > .glyphicon,
+body.theme-f1 #refresh-library > .glyphicon,
+body.theme-f1 #cwa-switch-theme > .glyphicon {
+    background: transparent !important;
+}
+
+/* ---------- Sidebar: grouped list ---------- */
+
+body.theme-f1 .row-fluid > .col-sm-2 {
+    background: var(--f1-bg) !important;
+    box-shadow: inset -0.5px 0 0 var(--f1-border);
+}
+
+body.theme-f1 .row-fluid > .col-sm-2 .nav-head,
+body.theme-f1 .row-fluid > .col-sm-2 li.nav-head {
+    color: var(--f1-muted) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px;
+}
+
+body.theme-f1 .row-fluid > .col-sm-2 li > a {
+    color: rgba(255, 255, 255, .86) !important;
+    border-radius: 10px;
+    font-size: 15px !important;
+    transition: background-color .15s ease;
+}
+
+body.theme-f1 .row-fluid > .col-sm-2 li > a:hover {
+    background: var(--f1-card) !important;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .row-fluid > .col-sm-2 li.active > a {
+    background: var(--f1-elevated) !important;
+    color: #ffffff !important;
+}
+
+/* ---------- Page titles ---------- */
+
+body.theme-f1 .col-sm-10 :is(h1, h2):not(.book h2),
+body.theme-f1 #title {
+    font-family: var(--f1-font-serif) !important;
+    color: var(--f1-text) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.3px;
+}
+
+body.theme-f1 .col-sm-10 > h1,
+body.theme-f1 .discover > h2 {
+    font-size: 26px !important;
+}
+
+body.theme-f1 #title {
+    font-size: 42px !important;
+    line-height: 1.1 !important;
+}
+
+/* ---------- Buttons ---------- */
+
+body.theme-f1 .btn {
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    transition: background-color .15s ease, transform .1s ease;
+}
+
+body.theme-f1 .btn:active {
+    transform: scale(.97);
+}
+
+body.theme-f1 .btn-primary,
+body.theme-f1 .btn-default:not(.action-icon-btn):not(#query_submit):not(.btn-file) {
+    background: #ffffff !important;
+    border-color: transparent !important;
+    color: #000000 !important;
+}
+
+body.theme-f1 .btn-primary:hover,
+body.theme-f1 .btn-default:not(.action-icon-btn):not(#query_submit):not(.btn-file):hover {
+    background: #e5e5ea !important;
+    color: #000000 !important;
+}
+
+body.theme-f1 .btn-danger:not(.action-icon-btn) {
+    background: var(--f1-red) !important;
+    border-color: transparent !important;
+    color: #000000 !important;
+}
+
+body.theme-f1 .action-icon-btn,
+body.theme-f1 .book-action-bar .btn {
+    background: var(--f1-card) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+}
+
+body.theme-f1 .action-icon-btn:hover,
+body.theme-f1 .book-action-bar .btn:hover {
+    background: var(--f1-elevated) !important;
+}
+
+/* Sort bar: segmented control */
+body.theme-f1 .discover .shelf-actions {
+    background: var(--f1-card) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+}
+
+body.theme-f1 .discover .shelf-actions .btn,
+body.theme-f1 .discover .shelf-actions .btn-primary {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    color: var(--f1-muted) !important;
+}
+
+body.theme-f1 .discover .shelf-actions .btn:hover {
+    background: var(--f1-fill) !important;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .discover .shelf-actions .btn.active {
+    background: var(--f1-fill-strong) !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+/* ---------- Book grid ---------- */
+
+body.theme-f1 .book .cover img,
+body.theme-f1 .book .cover .img img {
+    border-radius: 10px !important;
+    background: var(--f1-card) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .55);
+}
+
+body.theme-f1 .book .meta .title {
+    color: var(--f1-text) !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+}
+
+body.theme-f1 .book .meta .author,
+body.theme-f1 .book .meta .author a,
+body.theme-f1 .book .meta .series,
+body.theme-f1 .book .meta .series a {
+    color: var(--f1-muted) !important;
+}
+
+body.theme-f1 .book .meta a:hover {
+    color: var(--f1-blue) !important;
+}
+
+body.theme-f1 .read-toggle-btn,
+body.theme-f1 .edit-metadata-btn,
+body.theme-f1 .send-ereader-btn {
+    background: rgba(28, 28, 30, .78) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+body.theme-f1 .book .cover .badge {
+    background: rgba(28, 28, 30, .82) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: #ffffff !important;
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, .25);
+}
+
+/* ---------- Pagination ---------- */
+
+body.theme-f1 .pagination .page-link,
+body.theme-f1 .pagination > li > a {
+    background: var(--f1-card) !important;
+    border-color: transparent !important;
+    border-radius: 999px !important;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .pagination .active > .page-link,
+body.theme-f1 .pagination > li.active > a {
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+body.theme-f1 .pagination .page-next > .page-link,
+body.theme-f1 .pagination .page-previous > .page-link {
+    background: transparent !important;
+    color: transparent !important;
+}
+
+/* ---------- Cards and panels ---------- */
+
+body.theme-f1 .book-detail-card,
+body.theme-f1 .settings-container,
+body.theme-f1 .profile-header-container,
+body.theme-f1 .panel,
+body.theme-f1 .well {
+    background: var(--f1-card) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+}
+
+body.theme-f1 .settings-section-header,
+body.theme-f1 .settings-container h4 {
+    color: var(--f1-text) !important;
+    font-family: var(--f1-font-display) !important;
+    font-weight: 600 !important;
+}
+
+body.theme-f1 .profile-title-section h2 {
+    color: var(--f1-text) !important;
+    font-family: var(--f1-font-serif) !important;
+    font-weight: 600 !important;
+}
+
+body.theme-f1 #detailcover {
+    border-radius: 14px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .6);
+}
+
+body.theme-f1 .meta-chip {
+    background: var(--f1-elevated) !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+}
+
+body.theme-f1 .meta-pill {
+    background: var(--f1-fill) !important;
+    border: 0 !important;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .meta-pill:hover {
+    background: var(--f1-fill-strong) !important;
+}
+
+body.theme-f1 .book-detail-page a[href*="/series/"],
+body.theme-f1 #author a,
+body.theme-f1 .author a {
+    color: var(--f1-blue) !important;
+}
+
+/* ---------- Forms ---------- */
+
+body.theme-f1 .form-control {
+    background: var(--f1-fill) !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+body.theme-f1 .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(64, 156, 255, .45) !important;
+}
+
+body.theme-f1 select.form-control option {
+    background: var(--f1-card);
+    color: #ffffff;
+}
+
+body.theme-f1 .cwa-settings-tip,
+body.theme-f1 .settings-explanation {
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--f1-muted) !important;
+}
+
+body.theme-f1 .opds-order-item {
+    background: var(--f1-elevated) !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+}
+
+/* ---------- Menus, modals and alerts ---------- */
+
+body.theme-f1 .dropdown-menu {
+    background: rgba(37, 37, 40, .92) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    backdrop-filter: blur(28px) saturate(170%);
+    border: 0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .6), inset 0 0 0 0.5px rgba(255, 255, 255, .12) !important;
+    padding: 6px !important;
+}
+
+body.theme-f1 .dropdown-menu > li > a {
+    border-radius: 8px;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .dropdown-menu > li > a:hover,
+body.theme-f1 .dropdown-menu > li > a:focus {
+    background: var(--f1-blue) !important;
+    color: #ffffff !important;
+}
+
+body.theme-f1 .modal-content {
+    background: var(--f1-card) !important;
+    border: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .7) !important;
+}
+
+body.theme-f1 .modal-header,
+body.theme-f1 .modal-footer {
+    border-color: var(--f1-border) !important;
+}
+
+body.theme-f1 .alert,
+body.theme-f1 .alert-cwa {
+    background: rgba(44, 44, 46, .92) !important;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 0 !important;
+    border-radius: 16px !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .55);
+}
+
+body.theme-f1 .alert a {
+    color: var(--f1-blue) !important;
+}
+
+/* ---------- Tables ---------- */
+
+body.theme-f1 .table > thead > tr > th {
+    color: var(--f1-muted) !important;
+    border-color: var(--f1-border) !important;
+}
+
+body.theme-f1 .table > tbody > tr > td {
+    border-color: var(--f1-border) !important;
+}
+
+body.theme-f1 .table-striped > tbody > tr:nth-of-type(odd) {
+    background: rgba(255, 255, 255, .03) !important;
+}
+
+@media (max-width: 767px) {
+    body.theme-f1 #title {
+        font-size: 30px !important;
+    }
+
+    body.theme-f1 .col-sm-10 > h1,
+    body.theme-f1 .discover > h2 {
+        font-size: 22px !important;
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    body.theme-f1 > div.navbar.navbar-default.navbar-static-top,
+    body.theme-f1 .dropdown-menu,
+    body.theme-f1 .alert {
+        background: var(--f1-card) !important;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}

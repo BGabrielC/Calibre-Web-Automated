@@ -2094,11 +2094,7 @@ def register_post():
         content.role = config.config_default_role
         content.locale = config.config_default_locale
         content.sidebar_view = config.config_default_show
-        # Default to configured theme for new self-registered users (fallback to caliBlur=1)
-        try:
-            content.theme = getattr(config, 'config_theme', 1)
-        except Exception:
-            pass
+        content.theme = constants.theme_or_default(getattr(config, 'config_theme', None))
         try:
             ub.session.add(content)
             ub.session.commit()
@@ -2492,12 +2488,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
         
-        # Theme change (force dark)
         if 'theme' in to_save:
-            try:
-                current_user.theme = 1
-            except Exception:
-                pass
+            current_user.theme = constants.theme_or_default(to_save['theme'])
 
         # OPDS root order
         opds_order_raw = to_save.get("opds_root_order", "").strip()

@@ -184,33 +184,35 @@ then
 fi
 
 #------------------------------------------------------------------------------------------------------------------------
-#  One-time theme migration (force dark theme in app.db)
+#  Theme migration: every user was forced onto caliBlur (1) until F1 Dark (2) became the default theme.
+#  Move everyone to F1 Dark once; afterwards only repair values that are not a valid theme.
 #------------------------------------------------------------------------------------------------------------------------
 
-echo "[cwa-init] Enforcing dark theme in app.db (one-time migration)..."
+echo "[cwa-init] Checking themes in app.db..."
 
 python3 - <<'PY'
+import os
 import sqlite3
 
 db_path = "/config/app.db"
+marker = "/config/.cwa_theme_f1_default"
+valid = "(1, 2)"
 try:
   conn = sqlite3.connect(db_path)
   cur = conn.cursor()
-  # Force global default theme to dark
-  try:
-    cur.execute("UPDATE settings SET config_theme = 1")
-  except Exception:
-    pass
-  # Force all users to dark if theme column exists
-  try:
-    cur.execute("PRAGMA table_info(user)")
-    cols = {row[1] for row in cur.fetchall()}
-    if "theme" in cols:
-      cur.execute("UPDATE user SET theme = 1 WHERE theme IS NULL OR theme != 1")
-  except Exception:
-    pass
+  cur.execute("PRAGMA table_info(user)")
+  has_user_theme = "theme" in {row[1] for row in cur.fetchall()}
+  if not os.path.exists(marker):
+    cur.execute("UPDATE settings SET config_theme = 2")
+    if has_user_theme:
+      cur.execute("UPDATE user SET theme = 2")
+    print("[cwa-init] F1 Dark set as the theme for all users (one-time migration).")
+  else:
+    cur.execute(f"UPDATE settings SET config_theme = 2 WHERE config_theme IS NULL OR config_theme NOT IN {valid}")
+    if has_user_theme:
+      cur.execute(f"UPDATE user SET theme = 2 WHERE theme IS NULL OR theme NOT IN {valid}")
   conn.commit()
-  print("[cwa-init] Dark theme enforcement completed.")
+  open(marker, "a").close()
 except Exception as e:
   print(f"[cwa-init] Theme migration skipped due to error: {e}")
 finally:

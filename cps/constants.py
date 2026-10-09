@@ -70,6 +70,19 @@ ALL_ROLES = {
                 "viewer_role": ROLE_VIEWER,
             }
 
+THEME_CALIBLUR          = 1
+THEME_F1                = 2
+VALID_THEMES            = (THEME_CALIBLUR, THEME_F1)
+DEFAULT_THEME           = THEME_F1
+
+
+def theme_or_default(value):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return DEFAULT_THEME
+    return value if value in VALID_THEMES else DEFAULT_THEME
+
 DETAIL_RANDOM           = 1 <<  0
 SIDEBAR_LANGUAGE        = 1 <<  1
 SIDEBAR_SERIES          = 1 <<  2

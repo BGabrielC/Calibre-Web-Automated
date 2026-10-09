@@ -282,8 +282,8 @@ class User(UserBase, Base):
     kobo_only_shelves_sync = Column(Integer, default=0)
     opds_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
-    # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
-    theme = Column(Integer, default=1)
+    # Per-user theme (1=caliBlur, 2=F1 Dark); the old light theme (0) is retired
+    theme = Column(Integer, default=constants.DEFAULT_THEME)
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
     # Allow entering additional email addresses on send-to-eReader

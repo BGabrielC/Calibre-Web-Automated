@@ -28,6 +28,9 @@
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
     <link href="{{ url_for('static', filename='css/duplicates-notifications.css') }}" rel="stylesheet" media="screen">
     {% endif %}
+    {% if g.theme_skin == 'f1' %}
+      <link href="{{ url_for('static', filename='css/theme-f1.css') }}" rel="stylesheet" media="screen">
+    {% endif %}
     <script>
       let checkMessagesInterval = null; // Store interval ID
 
@@ -91,7 +94,7 @@
 
     </script>
   </head>
-  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if g.theme_skin == 'f1' %} theme-f1{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">

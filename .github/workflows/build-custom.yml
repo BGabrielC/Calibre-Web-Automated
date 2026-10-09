@@ -30,6 +30,8 @@ jobs:
 
       - name: Compute image name and version
         run: |
+          # The fork carries no release tags, so take them from upstream for the version label
+          git fetch --quiet --tags https://github.com/crocodilestick/Calibre-Web-Automated.git
           echo "IMAGE=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo v0)-custom-${GITHUB_SHA::7}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%d-%m-%Y %H:%M')" >> $GITHUB_ENV

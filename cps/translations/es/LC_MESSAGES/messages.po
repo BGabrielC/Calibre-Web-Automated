@@ -6448,9 +6448,8 @@ msgid "See Changelog"
 msgstr "Ver registro de cambios"
 
 #: cps/templates/layout.html:220
-#, fuzzy
 msgid "Open Duplicates"
-msgstr "Duplicados"
+msgstr "Abrir duplicados"
 
 #: cps/templates/layout.html:242
 msgid "Contribute here!"
@@ -6469,9 +6468,8 @@ msgid "Shelves"
 msgstr "Estanterías"
 
 #: cps/templates/layout.html:318
-#, fuzzy
 msgid "Create Shelf"
-msgstr "Crear una Estantería"
+msgstr "Crear estantería"
 
 #: cps/templates/layout.html:322
 msgid "Magic Shelves ✨"
@@ -6487,14 +6485,13 @@ msgstr "Anterior"
 
 #: cps/templates/layout.html:354
 msgid "Go to page"
-msgstr ""
+msgstr "Ir a la página"
 
 #: cps/templates/layout.html:377
 msgid "Book Details"
 msgstr "Detalles del libro"
 
 #: cps/templates/layout.html:447
-#, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Se han detectado libros duplicados"
 
@@ -6503,18 +6500,16 @@ msgid "You have unresolved duplicate books in your library"
 msgstr "Tienes libros duplicados sin resolver en tu biblioteca"
 
 #: cps/templates/layout.html:453
-#, fuzzy
 msgid "Duplicate Groups Found"
-msgstr "Se han encontrado grupos de duplicados"
+msgstr "Grupos de duplicados encontrados"
 
 #: cps/templates/layout.html:461
 msgid "Remind Me Later"
 msgstr "Recordármelo más tarde"
 
 #: cps/templates/layout.html:464
-#, fuzzy
 msgid "View & Resolve Duplicates"
-msgstr "Seleccionar duplicados"
+msgstr "Ver y resolver duplicados"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
@@ -7737,3 +7732,15 @@ msgstr "Mostrar selección leídos/no leídos"
 
 #~ msgid "Mark Book as Read or Unread"
 #~ msgstr "Marcar como no leido"
+
+msgid "Sort by series, first book to last"
+msgstr "Ordenar por serie, del primer libro al último"
+
+msgid "Library"
+msgstr "Biblioteca"
+
+msgid "Sections"
+msgstr "Secciones"
+
+msgid "Skip to content"
+msgstr "Saltar al contenido"

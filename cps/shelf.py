@@ -478,6 +478,9 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
                     change_shelf_order(shelf_id, [db.Books.timestamp.desc()])
                 if sort_param == 'old':
                     change_shelf_order(shelf_id, [db.Books.timestamp])
+                if sort_param == 'series':
+                    change_shelf_order(shelf_id, [db.Series.name.is_(None), db.Series.name,
+                                                  db.Books.series_index, db.Books.sort])
                 if sort_param == 'authaz':
                     change_shelf_order(shelf_id, [db.Books.author_sort.asc(), db.Series.name, db.Books.series_index])
                 if sort_param == 'authza':

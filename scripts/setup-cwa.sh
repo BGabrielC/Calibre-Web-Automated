@@ -48,4 +48,5 @@ make_dirs
 change_script_permissions
 add_aliases
 # Generate .mo files from .po files in translations directory
-bash /app/calibre-web-automated/scripts/compile_translations.sh
+# A failed compilation stops the image build; otherwise the image ships without that language
+bash /app/calibre-web-automated/scripts/compile_translations.sh || exit 1

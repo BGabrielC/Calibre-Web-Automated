@@ -11,13 +11,16 @@ if [ ! -d "$TRANSLATIONS_DIR" ]; then
   exit 1
 fi
 
-find "$TRANSLATIONS_DIR" -type f -name "messages.po" | while read -r po_file; do
+# The loop reads from process substitution, not a pipe: in a pipe it would run in a subshell and its
+# `exit 1` would not stop this script, so a .po that fails to compile went unnoticed and the image was
+# built without that language.
+while read -r po_file; do
     mo_file="${po_file%.po}.mo"
     echo "Compiling $po_file -> $mo_file"
-    if ! msgfmt "$po_file" -o "$mo_file"; then
+    if ! msgfmt --check "$po_file" -o "$mo_file"; then
       echo "[!] msgfmt failed for $po_file" >&2
       exit 1
     fi
-done
+done < <(find "$TRANSLATIONS_DIR" -type f -name "messages.po")
 
 echo "All .po files compiled to .mo files."

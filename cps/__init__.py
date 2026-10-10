@@ -12,6 +12,7 @@ import os
 import mimetypes
 
 from flask import Flask, g, session
+from jinja2 import FileSystemLoader
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -25,6 +26,7 @@ from .dep_check import dependency_check
 from .updater import Updater
 from . import config_sql
 from . import cache_buster
+from .ui_templates import HIG_TEMPLATE_DIR, build_template_loader, legacy_ui_forced
 from . import ub, db, magic_shelf
 
 try:
@@ -73,6 +75,12 @@ mimetypes.add_type('application/zip', '.kfx-zip')
 log = logger.create()
 
 app = Flask(__name__)
+# Redesigned pages in templates/hig/ replace the legacy page of the same name
+app.jinja_loader = build_template_loader(
+    app.jinja_loader,
+    FileSystemLoader(os.path.join(app.root_path, app.template_folder, HIG_TEMPLATE_DIR)),
+    force_legacy=legacy_ui_forced(),
+)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true',

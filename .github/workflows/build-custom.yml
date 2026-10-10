@@ -6,8 +6,6 @@ on:
       - custom
     paths-ignore:
       - '**.md'
-      - 'README_images/**'
-      - 'wiki_images/**'
       - 'changelogs/**'
   workflow_dispatch:
 

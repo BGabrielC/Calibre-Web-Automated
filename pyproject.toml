@@ -70,10 +70,6 @@ Homepage = "https://github.com/crocodilestick/Calibre-Web-Automated"
 Documentation = "https://github.com/crocodilestick/Calibre-Web-Automated/wiki"
 "Source Code" = "https://github.com/crocodilestick/Calibre-Web-Automated"
 
-[project.readme]
-file = "README.md"
-content-type = "text/markdown"
-
 [project.optional-dependencies]
 gdrive = [
     "google-api-python-client>=1.7.11,<2.200.0",

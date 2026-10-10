@@ -34,8 +34,12 @@ body.ui-legacy:not(.ui-shell--nav) .row-fluid > .col-sm-10 {
 }
 
 @media (max-width: 47.99rem) {
-    /* Leave room for the floating tab bar under the last row of content */
-    body.ui-legacy .row-fluid > .col-sm-10 {
-        padding-bottom: calc(var(--ui-tabbar-height) + var(--ui-tabbar-inset) * 2 + env(safe-area-inset-bottom));
+    /* Leave room for the floating tab bar under the last row of content. A spacer rather than
+       padding, which caliBlur resets on this element; its rem are the legacy 10px, hence the zoom factor. */
+    body.ui-legacy .row-fluid > .col-sm-10::after {
+        content: "";
+        display: block;
+        clear: both;
+        height: calc((var(--ui-tabbar-height) + var(--ui-tabbar-inset) * 4) * var(--ui-zoom) + env(safe-area-inset-bottom));
     }
 }

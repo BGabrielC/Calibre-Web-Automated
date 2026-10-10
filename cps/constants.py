@@ -71,6 +71,10 @@ ALL_ROLES = {
             }
 
 # F1 Dark is the only theme; it is a skin built on caliBlur (1), which is no longer selectable
+# Page size of a book list that is not paginated: the web interface always shows every book.
+# Only the OPDS catalog still pages its results, by config_books_per_page.
+NO_PAGE_LIMIT           = sys.maxsize
+
 THEME_F1                = 2
 VALID_THEMES            = (THEME_F1,)
 DEFAULT_THEME           = THEME_F1

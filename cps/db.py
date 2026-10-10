@@ -38,7 +38,7 @@ from flask_babel import gettext as _
 from flask_babel import get_locale
 from flask import flash
 
-from . import logger, ub, isoLanguages
+from . import constants, logger, ub, isoLanguages
 from .pagination import Pagination
 from .string_helper import strip_whitespaces
 
@@ -1046,7 +1046,9 @@ class CalibreDB:
                                            join_archive_read, config_read_column, *join, **kwargs):
         self.ensure_session()
         viewing_tag_id = kwargs.get('viewing_tag_id')
-        pagesize = pagesize or self.config.config_books_per_page
+        if not pagesize:
+            # No size asked for: the whole list on a single page, whatever page an old link names
+            pagesize, page = constants.NO_PAGE_LIMIT, 1
         if current_user.show_detail_random():
             random_query = self.generate_linked_query(config_read_column, database)
             # Eagerly load template relationships to prevent detached lazy-load

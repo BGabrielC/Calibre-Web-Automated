@@ -481,12 +481,10 @@ def render_books_list(data, sort_param, book_id, page):
         return render_archived_books(page, order)
     elif data == "search":
         term = request.args.get('query', None)
-        offset = int(int(config.config_books_per_page) * (page - 1))
-        return render_search_results(term, offset, order, config.config_books_per_page)
+        return render_search_results(term, None, order, None)
     elif data == "advsearch":
         term = json.loads(flask_session.get('query', '{}'))
-        offset = int(int(config.config_books_per_page) * (page - 1))
-        return render_adv_search_results(term, offset, order, config.config_books_per_page)
+        return render_adv_search_results(term, None, order, None)
     elif data == "magicshelf":
         return render_magic_shelf(book_id, sort_param, page)
     else:
@@ -548,17 +546,9 @@ def render_hot_books(page, order):
                      .order_by(func.random())
                      .limit(config.config_random_books).all())
 
-        off = int(config.config_books_per_page) * (page - 1)
-
-        # Get total count for pagination
-        total_hot_books = ub.session.query(func.count(ub.Downloads.book_id.distinct())).scalar()
-
-        # Get the book_ids for the current page
         hot_book_ids_query = (ub.session.query(ub.Downloads.book_id)
                               .group_by(ub.Downloads.book_id)
-                              .order_by(*order[0])
-                              .offset(off)
-                              .limit(config.config_books_per_page))
+                              .order_by(*order[0]))
 
         hot_book_ids = [item[0] for item in hot_book_ids_query]
 
@@ -579,8 +569,7 @@ def render_hot_books(page, order):
                     # This book might have been deleted from calibre but still in downloads table
                     ub.delete_download(book_id)
 
-        pagination = Pagination(page, config.config_books_per_page, total_hot_books)
-        return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
+        return render_title_template('index.html', random=random, entries=entries, pagination=None,
                                      title=_("Hot Books (Most Downloaded)"), page="hot", order=order[1])
     else:
         abort(404)
@@ -863,7 +852,9 @@ def render_read_books(page, are_read, as_xml=False, order=None):
                 return redirect(url_for("web.index"))
             return []  # ToDo: Handle error Case for opds
 
-    entries, random, pagination = calibre_db.fill_indexpage(page, 0,
+    entries, random, pagination = calibre_db.fill_indexpage(page,
+                                                             # The OPDS feed pages its results; the web page lists them all
+                                                             config.config_books_per_page if as_xml else 0,
                                                             db.Books,
                                                             db_filter,
                                                             sort_param,
@@ -928,7 +919,7 @@ def render_magic_shelf(shelf_id, sort_param, page):
     order = get_sort_function(sort_param, "magicshelf")
     
     # Get pagination settings\
-    per_page = config.config_books_per_page or 20
+    per_page, page = constants.NO_PAGE_LIMIT, 1
     
     # Build sort order - order[0] is a list, we need to unpack it
     sort_order = order[0] if order and len(order) > 0 else []

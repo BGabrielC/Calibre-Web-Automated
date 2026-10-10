@@ -896,7 +896,6 @@ def update_view_configuration():
     _config_int(to_save, "config_theme")
     config.config_theme = constants.theme_or_default(config.config_theme)
     _config_int(to_save, "config_random_books")
-    _config_int(to_save, "config_books_per_page")
     _config_int(to_save, "config_authors_max")
     _config_string(to_save, "config_default_language")
     _config_string(to_save, "config_default_locale")

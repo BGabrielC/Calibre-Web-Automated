@@ -25,7 +25,8 @@ def get_locale():
     if current_user is not None and hasattr(current_user, "locale"):
         # if the account is the guest account bypass the config lang settings
         if current_user.name != 'Guest':
-            return current_user.locale
+            # A locale saved before the interface was limited to English and Spanish falls back to English
+            return current_user.locale if current_user.locale in get_available_translations() else 'en'
 
     preferred = list()
     if has_request_context() and request.accept_languages:
@@ -46,7 +47,12 @@ def get_user_locale_language(user_language):
 
 
 def get_available_locale():
-    return [Locale('en')] + babel.list_translations()
+    # list_translations() adds the default locale itself, which would list English twice
+    locales = [Locale('en')]
+    for locale in babel.list_translations():
+        if locale not in locales:
+            locales.append(locale)
+    return locales
 
 
 def get_available_translations():

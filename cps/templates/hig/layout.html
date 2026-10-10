@@ -1,0 +1,5 @@
+{#
+  Legacy pages extend "layout.html", which resolves to this file. They are hosted inside the
+  redesigned frame; eReader browsers keep the original simple layout, which they can render.
+#}
+{% extends "legacy/layout.html" if simple else "hig/compat.html" %}

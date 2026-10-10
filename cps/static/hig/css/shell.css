@@ -1,0 +1,438 @@
+/*
+ * Application frame: sidebar, toolbar and tab bar, following the HIG sections on sidebars,
+ * tab bars and toolbars.
+ *
+ *   Wide windows:   a sidebar on the leading edge and a toolbar above the content.
+ *   Narrow windows: the toolbar on top and a floating tab bar at the bottom; the sidebar
+ *                   becomes a drawer opened from the Browse tab.
+ *
+ * Selectors start at .ui-shell and repeat a class where needed so they outrank the Bootstrap
+ * and caliBlur element rules that legacy pages still load.
+ */
+
+.ui-shell {
+    --ui-sidebar-width: 15rem;
+    --ui-toolbar-height: 3.75rem;
+    --ui-tabbar-height: 3.5rem;
+    --ui-tabbar-inset: .5rem;
+}
+
+.ui-shell .ui-skip-link {
+    position: fixed;
+    top: var(--ui-space-2);
+    left: var(--ui-space-2);
+    z-index: calc(var(--ui-z-toast) + 1);
+    padding: var(--ui-space-2) var(--ui-space-4);
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-accent);
+    color: var(--ui-on-accent);
+    font: var(--ui-text-headline);
+    transform: translateY(-200%);
+}
+
+.ui-shell .ui-skip-link:focus {
+    transform: none;
+}
+
+/* ============ Sidebar ============ */
+
+.ui-shell .ui-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: calc(var(--ui-z-toolbar) + 1);
+    display: flex;
+    flex-direction: column;
+    width: var(--ui-sidebar-width);
+    background: var(--ui-bg-secondary);
+    box-shadow: inset -.5px 0 0 var(--ui-separator);
+    color: var(--ui-label);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-brand {
+    display: flex;
+    align-items: center;
+    flex: none;
+    height: var(--ui-toolbar-height);
+    padding: 0 var(--ui-space-4);
+    overflow: hidden;
+    color: var(--ui-label);
+    font: var(--ui-text-headline);
+    font-size: 1rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ui-shell .ui-sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 var(--ui-space-3) var(--ui-space-6);
+    scrollbar-width: thin;
+}
+
+.ui-shell .ui-sidebar-group {
+    margin: 0 0 var(--ui-space-4);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: var(--ui-space-2) var(--ui-space-2) var(--ui-space-1);
+    color: var(--ui-label-secondary);
+    font: var(--ui-text-footnote);
+    font-weight: 600;
+    list-style: none;
+}
+
+.ui-shell .ui-sidebar summary.ui-sidebar-heading {
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+}
+
+.ui-shell .ui-sidebar summary.ui-sidebar-heading::-webkit-details-marker {
+    display: none;
+}
+
+.ui-shell .ui-sidebar summary.ui-sidebar-heading .ui-icon {
+    transition: transform var(--ui-duration) var(--ui-ease);
+}
+
+.ui-shell .ui-sidebar details:not([open]) > summary .ui-icon {
+    transform: rotate(-90deg);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+    min-height: 2rem;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-label);
+    font: var(--ui-text-subheadline);
+    text-decoration: none;
+    transition: background-color var(--ui-duration-fast);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item > .ui-icon {
+    color: var(--ui-accent-text);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item > .ui-truncate {
+    flex: 1;
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item:hover {
+    background: var(--ui-fill-quaternary);
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item[aria-current] {
+    background: var(--ui-fill-secondary);
+    font-weight: 600;
+}
+
+.ui-shell .ui-sidebar .ui-sidebar-item--action,
+.ui-shell .ui-sidebar .ui-sidebar-item--action > .ui-icon {
+    color: var(--ui-label-secondary);
+}
+
+.ui-shell .ui-sidebar-count {
+    color: var(--ui-label-tertiary);
+    font: var(--ui-text-footnote);
+}
+
+.ui-shell .ui-sidebar-emoji {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.25em;
+    font-size: 1rem;
+}
+
+.ui-shell .ui-sidebar-scrim {
+    display: none;
+}
+
+/* ============ Toolbar ============ */
+
+.ui-shell .ui-toolbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--ui-z-toolbar);
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    height: var(--ui-toolbar-height);
+    margin: 0;
+    padding: 0 var(--ui-space-4);
+    background: var(--ui-material);
+    -webkit-backdrop-filter: var(--ui-material-blur);
+    backdrop-filter: var(--ui-material-blur);
+    box-shadow: inset 0 -.5px 0 var(--ui-separator);
+}
+
+.ui-shell--nav .ui-toolbar {
+    left: var(--ui-sidebar-width);
+}
+
+.ui-shell .ui-toolbar .ui-toolbar-brand {
+    display: none;
+    overflow: hidden;
+    color: var(--ui-label);
+    font: var(--ui-text-headline);
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ui-shell .ui-toolbar .ui-toolbar-search {
+    flex: 1;
+    max-width: 26rem;
+    margin: 0;
+}
+
+.ui-shell .ui-toolbar .ui-toolbar-search .ui-input {
+    height: var(--ui-control-height);
+    margin: 0;
+    font: var(--ui-text-subheadline);
+}
+
+.ui-shell .ui-toolbar .ui-toolbar-upload {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.ui-shell .ui-toolbar .ui-button {
+    margin: 0;
+    color: var(--ui-label);
+}
+
+/* caliBlur sets `label { display: inline !important }`, and the upload button is a label */
+.ui-shell .ui-toolbar label.ui-button {
+    display: inline-flex !important;
+    max-width: none;
+    font-weight: 600;
+}
+
+.ui-shell .ui-toolbar .ui-button--icon {
+    background: transparent;
+}
+
+.ui-shell .ui-toolbar .ui-button--icon:hover {
+    background: var(--ui-fill-tertiary);
+}
+
+.ui-shell .ui-toolbar .ui-toolbar-narrow {
+    display: none;
+}
+
+.ui-shell .ui-toolbar .ui-menu-item {
+    color: var(--ui-label);
+}
+
+/* ============ Content ============ */
+
+.ui-shell .ui-main {
+    display: block;
+    min-height: 100dvh;
+    padding-top: var(--ui-toolbar-height);
+    outline: none;
+}
+
+.ui-shell--nav .ui-main {
+    margin-left: var(--ui-sidebar-width);
+}
+
+/* ============ Tab bar (narrow windows) ============ */
+
+.ui-shell .ui-tabbar {
+    display: none;
+}
+
+/* ============ Toasts ============ */
+
+/* Below the toolbar and centered on the content, so they never cover the search field */
+.ui-shell .ui-toast-region {
+    top: calc(var(--ui-toolbar-height) + var(--ui-space-3));
+}
+
+.ui-shell--nav .ui-toast-region {
+    left: calc(50% + var(--ui-sidebar-width) / 2);
+}
+
+
+.ui-shell .ui-toast--sticky {
+    border-radius: var(--ui-radius-lg);
+    max-width: 34rem;
+}
+
+.ui-shell .ui-toast a {
+    color: var(--ui-accent-text);
+    font-weight: 600;
+}
+
+.ui-shell .ui-toast-close {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-inline-start: var(--ui-space-1);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ui-fill-tertiary);
+    color: var(--ui-label-secondary);
+    cursor: pointer;
+}
+
+.ui-shell .ui-sheet-side {
+    flex: 1 1 0;
+}
+
+.ui-shell .ui-sheet-side + .ui-sheet-title {
+    flex: none;
+}
+
+.ui-shell .ui-sheet-title + .ui-sheet-side {
+    justify-content: flex-end;
+}
+
+/* ============ Narrow windows ============ */
+
+@media (max-width: 47.99rem) {
+    .ui-shell {
+        --ui-toolbar-height: 3rem;
+    }
+
+    .ui-shell--nav .ui-toolbar {
+        left: 0;
+    }
+
+    .ui-shell .ui-toolbar {
+        padding-inline: var(--ui-space-4) var(--ui-space-2);
+        padding-top: env(safe-area-inset-top);
+        height: calc(var(--ui-toolbar-height) + env(safe-area-inset-top));
+    }
+
+    .ui-shell .ui-toolbar .ui-toolbar-brand {
+        display: block;
+        min-width: 0;
+        line-height: var(--ui-hit-target);
+    }
+
+    .ui-shell .ui-toolbar .ui-toolbar-search,
+    .ui-shell .ui-toolbar .ui-toolbar-wide {
+        display: none;
+    }
+
+    .ui-shell .ui-toolbar .ui-toolbar-narrow {
+        display: flex;
+    }
+
+    .ui-shell--nav .ui-main {
+        margin-left: 0;
+    }
+
+    /* The sidebar becomes a drawer over the content */
+    .ui-shell .ui-sidebar {
+        z-index: calc(var(--ui-z-sheet) - 1);
+        width: min(20rem, calc(86vw / var(--ui-zoom, 1)));
+        padding-top: env(safe-area-inset-top);
+        box-shadow: var(--ui-shadow-3);
+        transform: translateX(-105%);
+        visibility: hidden;
+        transition: transform var(--ui-duration-slow) var(--ui-ease), visibility 0s var(--ui-duration-slow);
+    }
+
+    .ui-shell .ui-sidebar .ui-sidebar-item {
+        min-height: var(--ui-hit-target);
+        font: var(--ui-text-body);
+    }
+
+    .ui-shell .ui-sidebar .ui-sidebar-heading {
+        min-height: var(--ui-hit-target);
+    }
+
+    [data-nav-open] .ui-shell .ui-sidebar {
+        transform: none;
+        visibility: visible;
+        transition-delay: 0s;
+    }
+
+    [data-nav-open] .ui-shell .ui-sidebar-scrim {
+        position: fixed;
+        inset: 0;
+        z-index: calc(var(--ui-z-sheet) - 2);
+        display: block;
+        background: var(--ui-scrim);
+    }
+
+    /* Floating tab bar: navigation only, always visible */
+    .ui-shell .ui-tabbar {
+        position: fixed;
+        right: var(--ui-tabbar-inset);
+        bottom: calc(var(--ui-tabbar-inset) + env(safe-area-inset-bottom));
+        left: var(--ui-tabbar-inset);
+        z-index: var(--ui-z-toolbar);
+        display: flex;
+        height: var(--ui-tabbar-height);
+        padding: var(--ui-space-1);
+        border-radius: var(--ui-radius-pill);
+        background: var(--ui-material);
+        -webkit-backdrop-filter: var(--ui-material-blur);
+        backdrop-filter: var(--ui-material-blur);
+        box-shadow: var(--ui-shadow-2), var(--ui-material-edge);
+    }
+
+    .ui-shell .ui-tabbar .ui-tab {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: var(--ui-radius-pill);
+        background: none;
+        color: var(--ui-label-secondary);
+        font: var(--ui-text-caption);
+        font-size: .6875rem;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-shell .ui-tabbar .ui-tab > .ui-icon {
+        width: 1.375rem;
+        height: 1.375rem;
+    }
+
+    .ui-shell .ui-tabbar .ui-tab[aria-current] {
+        background: var(--ui-fill-tertiary);
+        color: var(--ui-accent-text);
+    }
+
+    .ui-shell .ui-main {
+        padding-bottom: calc(var(--ui-tabbar-height) + var(--ui-tabbar-inset) * 2 + env(safe-area-inset-bottom));
+    }
+
+    .ui-shell .ui-toast-region,
+    .ui-shell--nav .ui-toast-region {
+        top: calc(var(--ui-toolbar-height) + var(--ui-space-2) + env(safe-area-inset-top));
+        left: 50%;
+    }
+}

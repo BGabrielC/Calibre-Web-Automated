@@ -25,6 +25,10 @@
     }
 
     function applyAppearance(value) {
+        // A page that only exists in one appearance pins it and opts out of the reader's choice
+        if (document.documentElement.hasAttribute("data-appearance-lock")) {
+            return;
+        }
         if (value === "light" || value === "dark") {
             document.documentElement.dataset.appearance = value;
         } else {

@@ -1,0 +1,181 @@
+{#
+  Hosts a legacy page inside the redesigned frame. It keeps the skeleton, stylesheets and
+  scripts those pages were written against (Bootstrap 3, caliBlur, jQuery) and exposes the
+  blocks they fill: header, flash, body, modal and js. Goes away once every page is redesigned.
+#}
+{% extends "hig/shell.html" %}
+{% from 'modal_dialogs.html' import restrict_modal, delete_book, filechooser_modal, delete_confirm_modal, change_confirm_modal %}
+{% import 'image.html' as image %}
+
+{# Legacy pages are dark only, so the frame around them stays dark whatever the reader chose #}
+{% block html_attributes %} data-appearance="dark" data-appearance-lock{% endblock %}
+
+{% block legacy_head %}
+  <link href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}" rel="stylesheet" media="screen">
+  {% block header %}{% endblock %}
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
+  <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
+  <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
+  <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
+  <link href="{{ url_for('static', filename='css/layout-refresh.css') }}" rel="stylesheet" media="screen">
+  <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
+  {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+  <link href="{{ url_for('static', filename='css/duplicates-notifications.css') }}" rel="stylesheet" media="screen">
+  {% endif %}
+  <link href="{{ url_for('static', filename='css/theme-f1.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='hig/css/compat.css') }}">
+{% endblock %}
+
+{% block body_class %}ui-legacy {{ page }} {{ bodyClass }} blur theme-f1{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}{% endblock %}
+
+{# caliBlur's selectors start at `body > div.container-fluid`, so the legacy skeleton has to hang
+   directly from <body> instead of sitting inside the frame's <main> #}
+{% block main %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% block flash %}{% endblock %}
+    <div id="loader" hidden="true">
+      <center>
+        <h3>{{_('Uploading...')}}</h3>
+        <span>{{_("Please do not refresh the page")}}</span>.
+      </center>
+    </div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="col-sm-10" id="ui-main" tabindex="-1">
+          {% block body %}{% endblock %}
+          {% if pagination and (pagination.has_next or pagination.has_prev) %}
+            <div class="pagination">
+              {% if pagination.has_prev %}
+              <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+                }}">&laquo; {{_('Previous')}}</a></li>
+              {% endif %}
+            {% for page in pagination.iter_pages() %}
+              {% if page %}
+                {% if page != pagination.page %}
+                  <li class="page-item"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+                {% else %}
+                  <li class="page-item active"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+                {% endif %}
+              {% else %}
+                <li class="page-item page-last-separator page-jump dropdown">
+                  <a class="page-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-label="{{_('Go to page')}}">…</a>
+                  <ul class="dropdown-menu page-jump-menu" role="menu">
+                    {% for i in range(1, pagination.pages + 1) %}
+                      <li role="presentation"{% if i == pagination.page %} class="active"{% endif %}><a role="menuitem" tabindex="-1" href="{{ i|url_for_other_page }}">{{ i }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </li>
+              {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+              <li class="page-item page-next"><a class="page-link next" aria-label="next page" href="{{ (pagination.page + 1)|url_for_other_page
+                }}">{{_('Next')}} &raquo;</a></li>
+            {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="bookDetailsModal" tabindex="-1" role="dialog" aria-labelledby="bookDetailsModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="bookDetailsModalLabel">{{_('Book Details')}}</h4>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button type="button" id="details_close" class="btn btn-default" data-dismiss="modal">{{_('Close')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% block modal %}{% endblock %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/libs/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/bootstrap.min.js') }}"></script>
+    <!-- Patch: Define global bootstrap object for plugins expecting Bootstrap 5+ -->
+    <script>window.bootstrap = window.bootstrap || {};</script>
+    <script src="{{ url_for('static', filename='js/libs/underscore-umd-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/intention.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/context.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/plugins.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/jquery.form.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uploadprogress.js') }}"> </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/jquery.visible.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/compromise.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/readmore.min.js') }}"></script>
+    <script>
+      // Make script root available for JS
+      window.scriptRoot = "{{ request.script_root }}";
+      // Make user email data available for quick actions
+      window.cwaUserData = {};
+      {% if current_user.kindle_mail and current_user.kindle_mail.strip() %}
+      window.cwaUserData.primaryEmail = "{{ current_user.kindle_mail.split(',')[0].strip() }}";
+      {% else %}
+      window.cwaUserData.primaryEmail = null;
+      {% endif %}
+      // Add user permissions
+      window.cwaUserData.canEditBooks = {{ 'true' if current_user.role_edit() else 'false' }};
+    </script>
+    <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
+    {% block js %}{% endblock %}
+    {% if current_user.is_authenticated %}
+    <script src="{{ url_for('static', filename='user-profile-data/CWA-profile-updater.js') }}"></script>
+    {% endif %}
+    <!-- Makes sure filter buttons are only on the title bar of the page when there is no pagination -->
+    <script>
+      function updateFilterHeaderFixed() {
+        document.querySelectorAll('.row-fluid').forEach(function(row) {
+          var filterheader = row.querySelector('.filterheader');
+          if (!filterheader) return;
+          var hasPagination = !!row.querySelector('.pagination');
+          if (window.innerWidth >= 915 && !hasPagination) {
+            filterheader.classList.add('filterheader-fixed');
+          } else {
+            filterheader.classList.remove('filterheader-fixed');
+          }
+        });
+      }
+      window.addEventListener('DOMContentLoaded', updateFilterHeaderFixed);
+      window.addEventListener('resize', updateFilterHeaderFixed);
+    </script>
+    {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
+    <!-- Duplicate Notification Modal -->
+    <div id="duplicate-notification-backdrop" class="duplicate-notification-backdrop"></div>
+    <div id="duplicate-notification-modal" class="duplicate-notification-modal" tabindex="-1" role="dialog" aria-labelledby="duplicate-notification-title">
+      <div class="duplicate-notification-header">
+        <button id="duplicate-notification-close" class="duplicate-notification-close" aria-label="{{_('Close')}}">&times;</button>
+        <h2 id="duplicate-notification-title">{{_('Duplicate Books Detected')}}</h2>
+        <p>{{_('You have unresolved duplicate books in your library')}}</p>
+      </div>
+      <div class="duplicate-notification-body">
+        <div class="duplicate-count-section">
+          <div class="duplicate-count-badge" id="duplicate-notification-count">0</div>
+          <h3>{{_('Duplicate Groups Found')}}</h3>
+        </div>
+        <ul id="duplicate-notification-preview" class="duplicate-preview-list">
+          <!-- Preview items will be inserted here by JavaScript -->
+        </ul>
+      </div>
+      <div class="duplicate-notification-footer">
+        <button id="duplicate-notification-remind" class="duplicate-notification-btn duplicate-notification-btn-secondary">
+          {{_('Remind Me Later')}}
+        </button>
+        <a href="{{ url_for('duplicates.show_duplicates') }}" class="duplicate-notification-btn duplicate-notification-btn-primary">
+          {{_('View & Resolve Duplicates')}}
+        </a>
+      </div>
+    </div>
+    <script>
+      window.cwaDuplicateBootstrap = {{ duplicate_notification|tojson if duplicate_notification is defined else '{}' }};
+    </script>
+    <script src="{{ url_for('static', filename='js/duplicate-notifier.js') }}"></script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+/*
+ * Legacy pages inside the redesigned frame (hig/compat.html).
+ *
+ * caliBlur positions its content with fixed offsets: 60px for the bar on top (48px on narrow
+ * windows) and 240px for the sidebar. The frame uses the same sizes, so the legacy content
+ * lands where it always did and only what differs is adjusted here.
+ */
+
+/*
+ * Bootstrap 3 sets the root font size to 10px and the legacy styles use rem against it in
+ * hundreds of places, while the redesign's rem assume the browser's 16px. Rather than touch the
+ * legacy content, the frame's own pieces are zoomed by 16/10 so they come out at their design size.
+ */
+body.ui-legacy {
+    --ui-zoom: 1.6;
+}
+
+body.ui-legacy > :is(.ui-sidebar, .ui-toolbar, .ui-tabbar, .ui-toast-region, .ui-skip-link, dialog.ui-sheet) {
+    zoom: var(--ui-zoom);
+    /* Restated in rem: the 14px inherited from the legacy body would be zoomed too */
+    font-size: 1.0625rem;
+}
+
+/* The frame sets the redesign's 17px body text; legacy content was written for Bootstrap's 14px.
+   Line height is left to caliBlur, which sets its own on the body. */
+body.ui-legacy {
+    font-size: 14px;
+}
+
+/* Without the old sidebar column nothing is in the flow to the left of the content */
+body.ui-legacy:not(.ui-shell--nav) .row-fluid > .col-sm-10 {
+    left: 0;
+    width: 100%;
+}
+
+@media (max-width: 47.99rem) {
+    /* Leave room for the floating tab bar under the last row of content */
+    body.ui-legacy .row-fluid > .col-sm-10 {
+        padding-bottom: calc(var(--ui-tabbar-height) + var(--ui-tabbar-inset) * 2 + env(safe-area-inset-bottom));
+    }
+}

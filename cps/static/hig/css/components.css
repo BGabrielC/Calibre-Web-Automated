@@ -562,8 +562,9 @@ button.ui-row:active {
 }
 
 .ui-sheet {
-    width: min(34rem, calc(100vw - 2rem));
-    max-height: min(46rem, calc(100dvh - 4rem));
+    /* Viewport units are divided by --ui-zoom, which is 1 except on zoomed legacy pages */
+    width: min(34rem, calc(100vw / var(--ui-zoom, 1) - 2rem));
+    max-height: min(46rem, calc(100dvh / var(--ui-zoom, 1) - 4rem));
     border-radius: var(--ui-radius-xl);
     animation: ui-sheet-in var(--ui-duration-slow) var(--ui-ease);
 }
@@ -584,6 +585,7 @@ button.ui-row:active {
 
 .ui-sheet-title {
     flex: 1;
+    margin: 0;
     font: var(--ui-text-headline);
     text-align: center;
 }
@@ -596,9 +598,9 @@ button.ui-row:active {
 /* On narrow screens a sheet slides up from the bottom edge */
 @media (max-width: 40rem) {
     .ui-sheet {
-        width: 100vw;
+        width: calc(100vw / var(--ui-zoom, 1));
         max-width: none;
-        max-height: calc(100dvh - 3rem);
+        max-height: calc(100dvh / var(--ui-zoom, 1) - 3rem);
         margin: auto 0 0;
         border-radius: var(--ui-radius-xl) var(--ui-radius-xl) 0 0;
         padding-bottom: env(safe-area-inset-bottom);
@@ -607,7 +609,7 @@ button.ui-row:active {
 }
 
 .ui-alert {
-    width: min(20rem, calc(100vw - 3rem));
+    width: min(20rem, calc(100vw / var(--ui-zoom, 1) - 3rem));
     border-radius: var(--ui-radius-xl);
     background: var(--ui-material-thick);
     -webkit-backdrop-filter: var(--ui-material-blur);
@@ -621,6 +623,7 @@ button.ui-row:active {
 }
 
 .ui-alert-title {
+    margin: 0;
     font: var(--ui-text-headline);
 }
 
@@ -668,7 +671,7 @@ button.ui-row:active {
     align-items: center;
     gap: var(--ui-space-2);
     width: max-content;
-    max-width: calc(100vw - 2rem);
+    max-width: calc(100vw / var(--ui-zoom, 1) - 2rem);
     transform: translateX(-50%);
     pointer-events: none;
 }
@@ -689,6 +692,10 @@ button.ui-row:active {
     font-weight: 500;
     pointer-events: auto;
     animation: ui-toast-in var(--ui-duration-slow) var(--ui-ease);
+}
+
+.ui-toast-progress {
+    width: 6rem;
 }
 
 .ui-toast.is-leaving {
@@ -874,6 +881,7 @@ a.ui-chip:hover {
 }
 
 .ui-empty-title {
+    margin: 0;
     font: var(--ui-text-title-2);
 }
 

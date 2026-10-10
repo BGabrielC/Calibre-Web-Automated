@@ -1,6 +1,7 @@
 /*
- * Base styles for the redesigned interface. Element rules apply only inside .ui-root,
- * so legacy pages that still load Bootstrap and caliBlur are left alone.
+ * Base styles for the redesigned interface. Element rules apply only inside .ui-root and
+ * carry no specificity (:where), so on legacy pages Bootstrap's and caliBlur's own element
+ * rules still win and their content is left alone.
  */
 
 .ui-root {
@@ -25,36 +26,36 @@
     box-sizing: border-box;
 }
 
-.ui-root :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+:where(.ui-root) :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
     margin: 0;
 }
 
-.ui-root :where(ul, ol)[class] {
+:where(.ui-root) :where(ul[class], ol[class]) {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.ui-root :where(a) {
+:where(.ui-root) :where(a) {
     color: var(--ui-accent-text);
     text-decoration: none;
 }
 
-.ui-root :where(a:hover) {
+:where(.ui-root) :where(a:hover) {
     text-decoration: underline;
 }
 
-.ui-root :where(button, input, select, textarea) {
+:where(.ui-root) :where(button, input, select, textarea) {
     font: inherit;
     color: inherit;
 }
 
-.ui-root :where(img, svg, video) {
+:where(.ui-root) :where(img, svg, video) {
     display: block;
     max-width: 100%;
 }
 
-.ui-root :where(hr) {
+:where(.ui-root) :where(hr) {
     height: 0;
     margin: var(--ui-space-4) 0;
     border: 0;

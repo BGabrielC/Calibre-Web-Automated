@@ -1,0 +1,217 @@
+{#
+  Application frame of the redesigned interface: sidebar on wide windows, tab bar on narrow ones,
+  toolbar with search and actions. Redesigned pages extend this template and fill `content`;
+  legacy pages reach it through hig/compat.html.
+#}
+{% from "hig/_macros.html" import icon, assets %}
+{# Lucide icon and group for each sidebar entry of render_template.get_sidebar_config #}
+{% set nav_icons = {'new': 'library', 'serie': 'bookmark', 'author': 'user', 'cat': 'tags', 'publisher': 'building-2',
+                    'lang': 'languages', 'rate': 'chart-column', 'format': 'file', 'list': 'list', 'rand': 'shuffle',
+                    'hot': 'flame', 'rated': 'star', 'read': 'eye', 'unread': 'eye-off', 'download': 'download',
+                    'archived': 'archive', 'duplicates': 'copy'} %}
+{% set nav_browse = ['new', 'serie', 'author', 'cat', 'publisher', 'lang', 'rate', 'format', 'list'] %}
+{# Page names the server uses for each entry's list and detail views, so the entry shows as current on both #}
+{% set nav_pages = {'new': ['root', 'newest', 'index'], 'serie': ['series', 'serieslist'], 'author': ['author', 'authorlist'],
+                    'cat': ['category', 'catlist'], 'publisher': ['publisher', 'publisherlist'], 'lang': ['language', 'langlist'],
+                    'rate': ['rating', 'ratings', 'ratingslist'], 'format': ['format', 'formats', 'formatslist'],
+                    'list': ['list', 'book_table'], 'download': ['download', 'downloadlist']} %}
+{# Frame elements carry no legacy ids (#top_tasks, #nav_new...): caliBlur's styles and scripts target those #}
+{% set can_browse = current_user.is_authenticated or g.allow_anonymous %}
+{% set active_tab = 'series' if page in ['series', 'serieslist'] else 'authors' if page in ['author', 'authorlist']
+                    else 'search' if page in ['search', 'advsearch'] else 'library' if page in ['root', 'newest', 'index'] else 'browse' %}
+<!DOCTYPE html>
+<html lang="{{ current_user.locale }}"{% block html_attributes %}{% endblock %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  {% if g.google_site_verification|length > 0 %}
+  <meta name="google-site-verification" content="{{ g.google_site_verification }}">
+  {% endif %}
+  <title>{{ instance }} | {{ title|safe }}</title>
+  <link rel="apple-touch-icon" sizes="140x140" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  {% block legacy_head %}{% endblock %}
+  {{ assets() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='hig/css/shell.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="ui-root ui-shell{% if can_browse %} ui-shell--nav{% endif %} {% block body_class %}{% endblock %}">
+  <a class="ui-skip-link" href="#ui-main">{{ _('Skip to content') }}</a>
+
+  {% if can_browse %}
+  <aside class="ui-sidebar" id="ui-sidebar" aria-label="{{ _('Browse') }}">
+    <a class="ui-sidebar-brand" href="{{ url_for('web.index') }}">{{ instance }}</a>
+    <nav class="ui-sidebar-scroll">
+      {% for group_title, in_browse in [(_('Library'), true), (_('Discover'), false)] %}
+      <section class="ui-sidebar-group">
+        {# A div with a heading role: legacy stylesheets restyle bare h2 elements on some pages #}
+        <div class="ui-sidebar-heading" role="heading" aria-level="2">{{ group_title }}</div>
+        <ul class="ui-sidebar-list">
+          {% for element in sidebar if (element['id'] in nav_browse) == in_browse and element['public'] and current_user.check_visibility(element['visibility']) %}
+          <li>
+            <a class="ui-sidebar-item" href="{{ url_for(element['link'], data=element['page'], sort_param='stored') }}"{% if page == element['page'] or page in nav_pages.get(element['id'], []) %} aria-current="page"{% endif %}>
+              {{ icon(nav_icons.get(element['id'], 'circle')) }}
+              <span class="ui-truncate">{{ _(element['text']) }}</span>
+              {% if element['id'] == 'duplicates' %}
+              {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
+              <span id="duplicate-count-badge" class="ui-badge ui-badge--alert"{% if dup_count == 0 %} hidden{% endif %}>{% if dup_count > 99 %}99+{% else %}{{ dup_count }}{% endif %}</span>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endfor %}
+
+      <details class="ui-sidebar-group" open>
+        <summary class="ui-sidebar-heading">{{ _('Shelves') }}{{ icon('chevron-down', 'ui-icon--sm') }}</summary>
+        <ul class="ui-sidebar-list">
+          {% for shelf in g.shelves_access %}
+          {% set book_count = shelf.books.count() %}
+          <li>
+            <a class="ui-sidebar-item" href="{{ url_for('shelf.show_shelf', shelf_id=shelf.id) }}" title="{{ shelf.name }}"{% if request.path == url_for('shelf.show_shelf', shelf_id=shelf.id) %} aria-current="page"{% endif %}>
+              {{ icon('book-copy') }}
+              <span class="ui-truncate">{{ shelf.name }}{% if shelf.is_public == 1 %} {{ _('(Public)') }}{% endif %}</span>
+              <span class="ui-sidebar-count ui-numeric">{{ book_count }}</span>
+            </a>
+          </li>
+          {% endfor %}
+          {% if not current_user.is_anonymous %}
+          <li><a class="ui-sidebar-item ui-sidebar-item--action" href="{{ url_for('shelf.create_shelf') }}">{{ icon('plus') }}<span class="ui-truncate">{{ _('Create Shelf') }}</span></a></li>
+          {% endif %}
+        </ul>
+      </details>
+
+      {% if current_user.is_authenticated and magic_shelf_routes is defined and magic_shelf_routes.render %}
+      <details class="ui-sidebar-group" open>
+        <summary class="ui-sidebar-heading">{{ _('Magic Shelves ✨')|replace(' ✨', '') }}{{ icon('chevron-down', 'ui-icon--sm') }}</summary>
+        <ul class="ui-sidebar-list">
+          {% for shelf in g.magic_shelves_access %}
+          <li>
+            <a class="ui-sidebar-item" href="{{ url_for('web.render_magic_shelf', shelf_id=shelf.id) }}" title="{{ shelf.name }}"{% if request.path == url_for('web.render_magic_shelf', shelf_id=shelf.id) %} aria-current="page"{% endif %}>
+              <span class="ui-sidebar-emoji" aria-hidden="true">{{ shelf.icon }}</span>
+              <span class="ui-truncate">{{ shelf.name }}{% if shelf.is_public == 1 %} {{ _('(Public)') }}{% endif %}</span>
+              <span class="ui-sidebar-count ui-numeric">{{ shelf.book_count }}</span>
+            </a>
+          </li>
+          {% endfor %}
+          {% if magic_shelf_routes.create %}
+          <li><a class="ui-sidebar-item ui-sidebar-item--action" href="{{ url_for('web.create_magic_shelf') }}">{{ icon('sparkles') }}<span class="ui-truncate">{{ _('Create Magic Shelf') }}</span></a></li>
+          {% endif %}
+        </ul>
+      </details>
+      {% endif %}
+    </nav>
+  </aside>
+  <div class="ui-sidebar-scrim" data-ui-nav-close></div>
+  {% endif %}
+
+  <header class="ui-toolbar">
+    <a class="ui-toolbar-brand" href="{{ url_for('web.index') }}">{{ instance }}</a>
+    {% if can_browse %}
+    <form class="ui-search ui-toolbar-search" role="search" action="{{ url_for('search.simple_search') }}" method="GET">
+      {{ icon('search') }}
+      <input class="ui-input" type="search" id="ui-query" name="query" placeholder="{{ _('Search Library') }}" aria-label="{{ _('Search Library') }}" value="{{ searchterm }}">
+    </form>
+    <a class="ui-button ui-button--icon ui-toolbar-wide" href="{{ url_for('search.advanced_search') }}" title="{{ _('Advanced Search') }}" aria-label="{{ _('Advanced Search') }}">{{ icon('sliders-horizontal') }}</a>
+    {% endif %}
+    <span class="ui-spacer"></span>
+    {% if can_browse %}
+      {% if current_user.role_upload() and g.allow_upload %}
+      {# Own ids, not the legacy #form-upload/#btn-upload: caliBlur styles those and main.js binds to them #}
+      <form id="ui-upload-form" class="ui-toolbar-upload" action="{{ url_for('edit-book.upload') }}" data-uploading="{{ _('Uploading...') }}" data-failed="{{ _('Error') }}" data-done="{{ _('Upload done, processing, please wait...') }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% set accepted %}{% for format in accept %}.{% if format != '' %}{{ format }}{% else %}*{% endif %}{{ ',' if not loop.last }}{% endfor %}{% endset %}
+        <label class="ui-button ui-button--icon" title="{{ _('Upload') }}">
+          {{ icon('upload') }}<span class="ui-visually-hidden">{{ _('Upload') }}</span>
+          <input class="ui-visually-hidden" id="ui-upload-input" name="btn-upload" type="file" accept="{{ accepted }}" multiple>
+        </label>
+      </form>
+      {% endif %}
+      <button class="ui-button ui-button--icon ui-toolbar-wide" type="button" title="{{ _('Refresh Library') }}" aria-label="{{ _('Refresh Library') }}" onclick="refreshLibrary()">{{ icon('refresh-cw') }}</button>
+      {% if not current_user.is_anonymous %}
+      <a class="ui-button ui-button--icon ui-toolbar-wide" href="{{ url_for('tasks.get_tasks_status') }}" title="{{ _('Tasks') }}" aria-label="{{ _('Tasks') }}">{{ icon('activity') }}</a>
+      {% endif %}
+      <span class="ui-menu-anchor">
+        <button class="ui-button ui-button--icon" type="button" data-ui-menu="ui-account-menu" aria-haspopup="menu" aria-expanded="false" title="{{ _('Account') }}" aria-label="{{ _('Account') }}">{{ icon('user-round') }}</button>
+        <div class="ui-menu ui-menu--end" id="ui-account-menu" role="menu" hidden>
+          {% if not current_user.is_anonymous %}
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('web.profile') }}">{{ current_user.name }} {{ icon('user-round') }}</a>
+          <a class="ui-menu-item ui-toolbar-narrow" role="menuitem" href="{{ url_for('tasks.get_tasks_status') }}">{{ _('Tasks') }} {{ icon('activity') }}</a>
+          {% endif %}
+          <button class="ui-menu-item ui-toolbar-narrow" role="menuitem" type="button" onclick="refreshLibrary()">{{ _('Refresh Library') }} {{ icon('refresh-cw') }}</button>
+          {% if current_user.role_admin() %}
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('admin.admin') }}">{{ _('Admin') }} {{ icon('settings') }}</a>
+          {% endif %}
+          {% if not current_user.is_anonymous %}
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('about.package_versions') }}">{{ _('About') }} {{ icon('info') }}</a>
+          <hr class="ui-menu-separator">
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('web.logout', next=(request.path + '?' + request.query_string.decode('utf-8')).rstrip('?')) }}">{{ _('Logout') }} {{ icon('log-out') }}</a>
+          {% else %}
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('web.login') }}">{{ _('Login') }} {{ icon('log-in') }}</a>
+          {% if g.allow_registration %}
+          <a class="ui-menu-item" role="menuitem" href="{{ url_for('web.register') }}">{{ _('Register') }} {{ icon('user-round') }}</a>
+          {% endif %}
+          {% endif %}
+        </div>
+      </span>
+    {% endif %}
+  </header>
+
+  {% block main %}
+  <main class="ui-main" id="ui-main" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+  {% endblock %}
+
+  {% if can_browse %}
+  <nav class="ui-tabbar" aria-label="{{ _('Sections') }}">
+    <a class="ui-tab" href="{{ url_for('web.index') }}"{% if active_tab == 'library' %} aria-current="page"{% endif %}>{{ icon('library') }}<span>{{ _('Books') }}</span></a>
+    <a class="ui-tab" href="{{ url_for('web.books_list', data='series', sort_param='stored') }}"{% if active_tab == 'series' %} aria-current="page"{% endif %}>{{ icon('bookmark') }}<span>{{ _('Series') }}</span></a>
+    <a class="ui-tab" href="{{ url_for('web.books_list', data='author', sort_param='stored') }}"{% if active_tab == 'authors' %} aria-current="page"{% endif %}>{{ icon('user') }}<span>{{ _('Authors') }}</span></a>
+    <button class="ui-tab" type="button" data-ui-nav-open aria-controls="ui-sidebar" aria-expanded="false"{% if active_tab == 'browse' %} aria-current="true"{% endif %}>{{ icon('layout-grid') }}<span>{{ _('Browse') }}</span></button>
+    <button class="ui-tab" type="button" data-ui-open="ui-search-sheet"{% if active_tab == 'search' %} aria-current="true"{% endif %}>{{ icon('search') }}<span>{{ _('Search') }}</span></button>
+  </nav>
+
+  <dialog class="ui-sheet" id="ui-search-sheet" aria-labelledby="ui-search-sheet-title">
+    <header class="ui-sheet-header">
+      <span class="ui-sheet-side"></span>
+      <h2 class="ui-sheet-title" id="ui-search-sheet-title">{{ _('Search') }}</h2>
+      <button class="ui-button ui-button--plain ui-sheet-side" type="button" data-ui-close>{{ _('Close') }}</button>
+    </header>
+    <div class="ui-sheet-body ui-stack">
+      <form class="ui-search" role="search" action="{{ url_for('search.simple_search') }}" method="GET">
+        {{ icon('search') }}
+        <input class="ui-input" type="search" name="query" placeholder="{{ _('Search Library') }}" aria-label="{{ _('Search Library') }}" value="{{ searchterm }}" autofocus>
+      </form>
+      <a class="ui-button ui-button--tinted ui-button--block" href="{{ url_for('search.advanced_search') }}">{{ icon('sliders-horizontal') }} {{ _('Advanced Search') }}</a>
+    </div>
+  </dialog>
+  {% endif %}
+
+  {# Flashed messages become toasts. Plain ones dismiss themselves; the ones with a link wait. #}
+  {% set flash_tones = {'error': 'error', 'warning': 'warning', 'success': 'success', 'info': 'info', 'cwa_refresh': 'info',
+                        'cwa_update': 'info', 'duplicate_scan_setup': 'info', 'cwa_arch_warning': 'error',
+                        'translation_missing': 'info', 'theme_migration': 'info'} %}
+  {% set flash_icons = {'error': 'circle-x', 'warning': 'triangle-alert', 'success': 'circle-check', 'info': 'info'} %}
+  <div class="ui-toast-region" role="status" aria-live="polite">
+    {% for category, message in get_flashed_messages(with_categories=True) if category in flash_tones %}
+    {% set tone = flash_tones[category] %}
+    {% set sticky = category in ['cwa_update', 'duplicate_scan_setup', 'cwa_arch_warning', 'translation_missing'] %}
+    <div class="ui-toast ui-toast--{{ tone }}{% if sticky %} ui-toast--sticky{% endif %}" id="flash_{{ 'danger' if tone == 'error' else tone }}"{% if not sticky %} data-ui-autodismiss{% endif %}>
+      {{ icon(flash_icons[tone]) }}
+      <span>{{ message }}
+        {% if category == 'duplicate_scan_setup' %}<a href="{{ url_for('duplicates.show_duplicates') }}">{{ _('Open Duplicates') }}</a>{% endif %}
+      </span>
+      {% if sticky %}
+      <button class="ui-toast-close" type="button" aria-label="{{ _('Close') }}" data-ui-toast-close{% if category == 'duplicate_scan_setup' %} data-dismiss-url="{{ url_for('duplicates.dismiss_duplicate_scan_setup_notice') }}"{% endif %}>{{ icon('x', 'ui-icon--sm') }}</button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <script src="{{ url_for('static', filename='hig/js/shell.js') }}" data-refresh-url="{{ url_for('library_refresh.cwa_library_refresh') if can_browse else '' }}" data-refresh-messages-url="{{ url_for('library_refresh.get_library_refresh_messages') if can_browse else '' }}" data-csrf="{{ csrf_token() }}" data-error="{{ _('Error') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -501,7 +501,8 @@ if ($("body.shelf").length > 0) {
 // Rest of Tooltips
 $(".home-btn > a").attr({
     "data-toggle": "tooltip",
-    "href": $(".navbar-brand")[0].href,
+    // The redesigned frame has no .navbar-brand; without the guard this throws and stops the script
+    "href": ($(".navbar-brand")[0] || {}).href,
     "title": $(document.body).attr("data-text"),    // Home
     "data-placement": "bottom"
 })

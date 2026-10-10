@@ -1,7 +1,7 @@
 ---
 services:
   calibre-web-automated:
-    image: ghcr.io/bgabrielc/calibre-web-automated:custom
+    image: ghcr.io/bgabrielc/calibre-web-automated:latest
     container_name: calibre-web-automated
     environment:
       # Only change these if you know what you're doing

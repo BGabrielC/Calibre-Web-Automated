@@ -1,20 +1,24 @@
-name: Build custom image
+name: Build image
 
 on:
   push:
     branches:
-      - custom
+      - main
     paths-ignore:
       - '**.md'
   workflow_dispatch:
 
 concurrency:
-  group: build-custom
+  group: build
   cancel-in-progress: true
 
 permissions:
   contents: read
   packages: write
+
+env:
+  # Version this build is based on; the commit is appended to it (v4.0.8-1a2b3c4)
+  BASE_VERSION: v4.0.8
 
 jobs:
   build:
@@ -22,15 +26,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Compute image name and version
         run: |
-          # The fork carries no release tags, so take them from upstream for the version label
-          git fetch --quiet --tags https://github.com/crocodilestick/Calibre-Web-Automated.git
           echo "IMAGE=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo v0)-custom-${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "VERSION=${BASE_VERSION}-${GITHUB_SHA::7}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date -u +'%d-%m-%Y %H:%M')" >> $GITHUB_ENV
 
       - name: GitHub Container Registry Login
@@ -54,8 +54,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ env.IMAGE }}:custom
-            ${{ env.IMAGE }}:custom-${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
           build-args: |
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ env.VERSION }}

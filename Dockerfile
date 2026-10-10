@@ -15,7 +15,7 @@
 # --platform linux/amd64,linux/arm64, \
 # --build-arg="BUILD_DATE=02-08-2024 20:52" \
 # --build-arg="VERSION=2.1.0" \
-# --tag ghcr.io/bgabrielc/calibre-web-automated:custom .
+# --tag ghcr.io/bgabrielc/calibre-web-automated:latest .
 
 # ==========================================================================
 # STAGE 1: Dependencies - Install system packages and Python dependencies

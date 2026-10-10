@@ -1,0 +1,253 @@
+{% from "hig/_macros.html" import icon, assets %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Design system</title>
+  {{ assets() }}
+  <style>
+    .kit { max-width: 60rem; margin-inline: auto; padding: var(--ui-space-8) var(--ui-page-margin) var(--ui-space-12); }
+    .kit-section { display: flex; flex-direction: column; gap: var(--ui-space-4); margin-top: var(--ui-space-10); }
+    .kit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--ui-space-6); }
+    .kit-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: var(--ui-space-3); }
+    .kit-swatch { overflow: hidden; border-radius: var(--ui-radius-md); background: var(--ui-bg-grouped-secondary); font: var(--ui-text-caption); }
+    .kit-swatch > i { display: block; height: 3rem; box-shadow: inset 0 0 0 .5px var(--ui-separator); }
+    .kit-swatch > span { display: block; padding: var(--ui-space-2) var(--ui-space-3); }
+    .kit-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: var(--ui-space-2); }
+    .kit-icons > div { display: flex; flex-direction: column; align-items: center; gap: var(--ui-space-2); padding: var(--ui-space-3) var(--ui-space-1); border-radius: var(--ui-radius-md); background: var(--ui-bg-grouped-secondary); color: var(--ui-label-secondary); font: var(--ui-text-caption); text-align: center; }
+    .kit-icons .ui-icon { width: 1.5rem; height: 1.5rem; color: var(--ui-label); }
+    .kit-glass { position: relative; overflow: hidden; height: 9rem; border-radius: var(--ui-radius-lg); background: linear-gradient(120deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #b983ff); }
+    .kit-glass > div { position: absolute; inset: auto var(--ui-space-4) var(--ui-space-4); display: flex; align-items: center; gap: var(--ui-space-3); padding: var(--ui-space-3) var(--ui-space-4); border-radius: var(--ui-radius-pill); }
+  </style>
+</head>
+<body class="ui-root ui-root--grouped">
+<main class="kit">
+  <header class="ui-cluster" style="--ui-cluster-gap: var(--ui-space-4)">
+    <div>
+      <h1 class="ui-large-title">Design system</h1>
+      <p class="ui-secondary">Components of the redesigned interface, in the current appearance.</p>
+    </div>
+    <span class="ui-spacer"></span>
+    <div class="ui-segmented" role="group" aria-label="Appearance" id="kit-appearance">
+      <label><input type="radio" name="appearance" value="auto"><span>{{ icon('monitor') }} Auto</span></label>
+      <label><input type="radio" name="appearance" value="light"><span>{{ icon('sun') }} Light</span></label>
+      <label><input type="radio" name="appearance" value="dark"><span>{{ icon('moon') }} Dark</span></label>
+    </div>
+  </header>
+
+  <section class="kit-section" id="typography">
+    <h2 class="ui-title-2">Typography</h2>
+    <div class="ui-card ui-stack" style="--ui-stack-gap: var(--ui-space-3)">
+      <p class="ui-large-title">Large Title — The Farthest Shore</p>
+      <p class="ui-title-1">Title 1 — Memories of Ice</p>
+      <p class="ui-title-2">Title 2 — Continue reading</p>
+      <p class="ui-title-3">Title 3 — Recently added</p>
+      <p class="ui-headline">Headline — Steven Erikson</p>
+      <p class="ui-body">Body — A triumph of storytelling and the latest thrilling chapter in an epic fantasy.</p>
+      <p class="ui-callout">Callout — Book 3 of Malazan Book of the Fallen</p>
+      <p class="ui-subheadline ui-secondary">Subheadline — 1,187 pages · English · EPUB</p>
+      <p class="ui-footnote ui-secondary">Footnote — Last modified on Oct 9, 2026</p>
+      <p class="ui-caption ui-tertiary">Caption — 2.4 MB</p>
+    </div>
+  </section>
+
+  <section class="kit-section" id="color">
+    <h2 class="ui-title-2">Color</h2>
+    <div class="kit-swatches">
+      {% for name in ['bg', 'bg-secondary', 'bg-tertiary', 'bg-grouped', 'bg-grouped-secondary', 'fill', 'fill-secondary', 'fill-tertiary', 'separator-opaque', 'blue', 'green', 'red', 'orange', 'yellow', 'purple', 'gray'] %}
+      <div class="kit-swatch"><i style="background: var(--ui-{{ name }})"></i><span>{{ name }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="ui-card ui-cluster" style="--ui-cluster-gap: var(--ui-space-5)">
+      <span>Label</span>
+      <span class="ui-secondary">Secondary</span>
+      <span class="ui-tertiary">Tertiary</span>
+      {% for name in ['blue', 'green', 'red', 'orange', 'yellow', 'purple'] %}
+      <span style="color: var(--ui-{{ name }}-text)">{{ name|capitalize }} text</span>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="kit-section" id="buttons">
+    <h2 class="ui-title-2">Buttons</h2>
+    <div class="ui-card ui-stack">
+      <div class="ui-cluster">
+        <button class="ui-button ui-button--filled">{{ icon('book-open') }} Read</button>
+        <button class="ui-button ui-button--tinted">{{ icon('download') }} Download</button>
+        <button class="ui-button">Gray</button>
+        <button class="ui-button ui-button--plain">Plain</button>
+        <button class="ui-button ui-button--filled" disabled>Disabled</button>
+      </div>
+      <div class="ui-cluster">
+        <button class="ui-button ui-button--filled ui-button--destructive">{{ icon('trash-2') }} Delete</button>
+        <button class="ui-button ui-button--tinted ui-button--destructive">Remove</button>
+        <button class="ui-button ui-button--plain ui-button--destructive">Cancel download</button>
+      </div>
+      <div class="ui-cluster">
+        <button class="ui-button ui-button--sm">Small</button>
+        <button class="ui-button">Regular</button>
+        <button class="ui-button ui-button--lg ui-button--filled">Large</button>
+        <button class="ui-button ui-button--icon" aria-label="More">{{ icon('ellipsis') }}</button>
+        <button class="ui-button ui-button--icon ui-button--tinted" aria-label="Add">{{ icon('plus') }}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-section" id="lists">
+    <h2 class="ui-title-2">Lists</h2>
+    <div class="kit-grid">
+      <div>
+        <h3 class="ui-list-header">Library</h3>
+        <nav class="ui-list" aria-label="Library">
+          <a class="ui-row" href="#lists" aria-current="page"><span class="ui-row-icon">{{ icon('library') }}</span><span class="ui-row-text">Books</span><span class="ui-row-value ui-numeric">734</span>{{ icon('chevron-right', 'ui-row-chevron') }}</a>
+          <a class="ui-row" href="#lists"><span class="ui-row-icon" style="--ui-row-icon-color: var(--ui-purple)">{{ icon('bookmark') }}</span><span class="ui-row-text">Series</span><span class="ui-row-value ui-numeric">178</span>{{ icon('chevron-right', 'ui-row-chevron') }}</a>
+          <a class="ui-row" href="#lists"><span class="ui-row-icon" style="--ui-row-icon-color: var(--ui-orange)">{{ icon('user') }}</span><span class="ui-row-text">Authors</span><span class="ui-row-value ui-numeric">312</span>{{ icon('chevron-right', 'ui-row-chevron') }}</a>
+        </nav>
+        <p class="ui-list-footer">Counts include archived books.</p>
+      </div>
+      <div>
+        <h3 class="ui-list-header">Settings</h3>
+        <div class="ui-list">
+          <label class="ui-row"><span class="ui-row-text">Sync with Kobo<span class="ui-row-subtitle">Send new books to the device</span></span><input class="ui-switch" type="checkbox" checked></label>
+          <label class="ui-row"><span class="ui-row-text">Show read books</span><input class="ui-switch" type="checkbox"></label>
+          <div class="ui-row"><span class="ui-row-text">Language</span><select class="ui-select" aria-label="Language"><option>English</option><option>Español</option></select></div>
+          <div class="ui-row"><span class="ui-row-text">Books per page</span><input class="ui-input ui-numeric" type="number" value="60" aria-label="Books per page"></div>
+          <button class="ui-row ui-row--destructive" type="button">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-section" id="forms">
+    <h2 class="ui-title-2">Fields</h2>
+    <div class="ui-card kit-grid">
+      <label class="ui-field"><span class="ui-field-label">Title</span><input class="ui-input" type="text" value="Memories of Ice"></label>
+      <label class="ui-field"><span class="ui-field-label">Author</span><input class="ui-input" type="text" placeholder="Author name"><span class="ui-field-help">Separate several authors with &amp;.</span></label>
+      <label class="ui-field"><span class="ui-field-label">Email</span><input class="ui-input" type="email" value="not-an-email" aria-invalid="true"><span class="ui-field-error">Enter a valid email address.</span></label>
+      <label class="ui-field"><span class="ui-field-label">Format</span><select class="ui-select"><option>EPUB</option><option>KEPUB</option><option>PDF</option></select></label>
+      <label class="ui-field" style="grid-column: 1 / -1"><span class="ui-field-label">Description</span><textarea class="ui-textarea" placeholder="What is this book about?"></textarea></label>
+    </div>
+    <div class="ui-cluster" style="--ui-cluster-gap: var(--ui-space-4)">
+      <div class="ui-segmented" role="group" aria-label="Sort">
+        <label><input type="radio" name="sort" checked><span>Recent</span></label>
+        <label><input type="radio" name="sort"><span>Title</span></label>
+        <label><input type="radio" name="sort"><span>Author</span></label>
+      </div>
+      <form class="ui-search" role="search" style="flex: 1; min-width: 14rem" onsubmit="return false">
+        {{ icon('search') }}
+        <input class="ui-input" type="search" placeholder="Search library" aria-label="Search library">
+      </form>
+    </div>
+  </section>
+
+  <section class="kit-section" id="overlays">
+    <h2 class="ui-title-2">Menus, sheets, alerts and toasts</h2>
+    <div class="ui-card ui-cluster">
+      <span class="ui-menu-anchor">
+        <button class="ui-button" data-ui-menu="kit-menu" aria-haspopup="menu" aria-expanded="false" id="kit-menu-button">{{ icon('ellipsis') }} Book actions</button>
+        <div class="ui-menu" id="kit-menu" role="menu" hidden>
+          <button class="ui-menu-item" role="menuitem">Send to eReader {{ icon('send') }}</button>
+          <button class="ui-menu-item" role="menuitem">Mark as read {{ icon('circle-check') }}</button>
+          <button class="ui-menu-item" role="menuitem">Edit metadata {{ icon('pencil') }}</button>
+          <hr class="ui-menu-separator">
+          <button class="ui-menu-item ui-menu-item--destructive" role="menuitem">Delete book {{ icon('trash-2') }}</button>
+        </div>
+      </span>
+      <button class="ui-button" data-ui-open="kit-sheet">Open sheet</button>
+      <button class="ui-button ui-button--destructive" data-ui-open="kit-alert">Open alert</button>
+      <button class="ui-button" onclick="ui.toast('Book sent to your Kobo', {tone: 'success'})">Success toast</button>
+      <button class="ui-button" onclick="ui.toast('Could not reach the server', {tone: 'error'})">Error toast</button>
+    </div>
+
+    <dialog class="ui-sheet" id="kit-sheet" aria-labelledby="kit-sheet-title">
+      <header class="ui-sheet-header">
+        <button class="ui-button ui-button--plain" data-ui-close>Cancel</button>
+        <h3 class="ui-sheet-title" id="kit-sheet-title">Add to shelf</h3>
+        <button class="ui-button ui-button--plain" data-ui-close value="done"><strong>Done</strong></button>
+      </header>
+      <div class="ui-sheet-body ui-stack">
+        <div class="ui-list">
+          <label class="ui-row"><span class="ui-row-text">Currently reading</span><input class="ui-switch" type="checkbox" checked></label>
+          <label class="ui-row"><span class="ui-row-text">Favourites</span><input class="ui-switch" type="checkbox"></label>
+          <label class="ui-row"><span class="ui-row-text">To read on holiday</span><input class="ui-switch" type="checkbox"></label>
+        </div>
+        <button class="ui-button ui-button--tinted ui-button--block">{{ icon('plus') }} New shelf</button>
+      </div>
+    </dialog>
+
+    <dialog class="ui-alert" id="kit-alert" aria-labelledby="kit-alert-title" aria-describedby="kit-alert-message">
+      <div class="ui-alert-body">
+        <h3 class="ui-alert-title" id="kit-alert-title">Delete “Memories of Ice”?</h3>
+        <p class="ui-alert-message" id="kit-alert-message">The book and its files are removed from the library and from your Kobo. This can’t be undone.</p>
+      </div>
+      <div class="ui-alert-actions">
+        <button class="ui-button" data-ui-close>Cancel</button>
+        <button class="ui-button ui-button--filled ui-button--destructive" data-ui-close value="delete">Delete</button>
+      </div>
+    </dialog>
+  </section>
+
+  <section class="kit-section" id="status">
+    <h2 class="ui-title-2">Badges, chips and progress</h2>
+    <div class="ui-card ui-stack">
+      <div class="ui-cluster">
+        <span class="ui-badge">3</span><span class="ui-badge ui-badge--accent">12</span><span class="ui-badge ui-badge--alert">!</span>
+        <a class="ui-chip" href="#status">Fantasy</a><a class="ui-chip" href="#status">Epic</a><span class="ui-chip">{{ icon('languages', 'ui-icon--sm') }} English</span>
+        <span class="ui-spinner" role="status" aria-label="Loading"></span>
+      </div>
+      <progress class="ui-progress" value="62" max="100" aria-label="Reading progress">62%</progress>
+    </div>
+  </section>
+
+  <section class="kit-section" id="tables">
+    <h2 class="ui-title-2">Table</h2>
+    <div class="ui-table-wrap">
+      <table class="ui-table">
+        <thead><tr><th>Title</th><th>Author</th><th>Series</th><th class="is-numeric">Size</th></tr></thead>
+        <tbody>
+          <tr><td>Gardens of the Moon</td><td>Steven Erikson</td><td>Malazan Book of the Fallen 1</td><td class="is-numeric">1.9 MB</td></tr>
+          <tr><td>Deadhouse Gates</td><td>Steven Erikson</td><td>Malazan Book of the Fallen 2</td><td class="is-numeric">2.2 MB</td></tr>
+          <tr><td>Memories of Ice</td><td>Steven Erikson</td><td>Malazan Book of the Fallen 3</td><td class="is-numeric">2.4 MB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="kit-section" id="empty">
+    <h2 class="ui-title-2">Empty state and materials</h2>
+    <div class="kit-grid">
+      <div class="ui-card">
+        <div class="ui-empty">
+          {{ icon('book-open') }}
+          <h3 class="ui-empty-title">No books yet</h3>
+          <p class="ui-empty-message">Books you upload or drop in the ingest folder appear here.</p>
+          <button class="ui-button ui-button--filled">{{ icon('upload') }} Upload a book</button>
+        </div>
+      </div>
+      <div class="kit-glass">
+        <div class="ui-material">{{ icon('play') }}<span class="ui-headline">Floating control on glass</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kit-section" id="icons">
+    <h2 class="ui-title-2">Icons</h2>
+    <div class="kit-icons">
+      {% for name in ['house', 'library', 'book-open', 'bookmark', 'user', 'tags', 'star', 'archive', 'search', 'plus', 'ellipsis', 'settings', 'upload', 'download', 'send', 'pencil', 'trash-2', 'refresh-cw', 'eye', 'circle-check', 'triangle-alert', 'info', 'sun', 'moon', 'panel-left', 'sliders-horizontal', 'layout-grid', 'list', 'sparkles', 'chart-column', 'tablet-smartphone', 'log-out'] %}
+      <div>{{ icon(name) }}{{ name }}</div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+<script>
+  // Appearance picker: reflects the stored choice and applies a new one
+  (function () {
+    var group = document.getElementById("kit-appearance");
+    var current = group.querySelector('input[value="' + ui.getAppearance() + '"]');
+    if (current) { current.checked = true; }
+    group.addEventListener("change", function (event) { ui.setAppearance(event.target.value); });
+  })();
+</script>
+</body>
+</html>

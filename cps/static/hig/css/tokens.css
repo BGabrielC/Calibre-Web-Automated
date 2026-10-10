@@ -1,0 +1,173 @@
+/*
+ * Design tokens for the redesigned interface, following Apple's Human Interface Guidelines.
+ *
+ * Every color is a light-dark() pair, so the interface follows the system appearance by default.
+ * <html data-appearance="light|dark"> pins one of them.
+ */
+
+:root {
+    color-scheme: light dark;
+
+    /* ---- Backgrounds ---- */
+    --ui-bg: light-dark(#ffffff, #000000);
+    --ui-bg-secondary: light-dark(#f2f2f7, #1c1c1e);
+    --ui-bg-tertiary: light-dark(#ffffff, #2c2c2e);
+    /* Grouped content: the page is tinted and the groups sit on top of it */
+    --ui-bg-grouped: light-dark(#f2f2f7, #000000);
+    --ui-bg-grouped-secondary: light-dark(#ffffff, #1c1c1e);
+    --ui-bg-grouped-tertiary: light-dark(#f2f2f7, #2c2c2e);
+
+    /* ---- Text ---- */
+    --ui-label: light-dark(#000000, #ffffff);
+    --ui-label-secondary: light-dark(rgb(60 60 67 / .78), rgb(235 235 245 / .68));
+    --ui-label-tertiary: light-dark(rgb(60 60 67 / .62), rgb(235 235 245 / .5));
+    --ui-label-quaternary: light-dark(rgb(60 60 67 / .3), rgb(235 235 245 / .28));
+    --ui-placeholder: var(--ui-label-tertiary);
+
+    /* ---- Lines and fills ---- */
+    --ui-separator: light-dark(rgb(60 60 67 / .22), rgb(84 84 88 / .65));
+    --ui-separator-opaque: light-dark(#c6c6c8, #38383a);
+    --ui-fill: light-dark(rgb(120 120 128 / .2), rgb(120 120 128 / .36));
+    --ui-fill-secondary: light-dark(rgb(120 120 128 / .16), rgb(120 120 128 / .32));
+    --ui-fill-tertiary: light-dark(rgb(118 118 128 / .12), rgb(118 118 128 / .24));
+    --ui-fill-quaternary: light-dark(rgb(116 116 128 / .08), rgb(118 118 128 / .18));
+
+    /* ---- System colors ----
+       The plain value is for fills, icons and large shapes; the -text value has at least
+       4.5:1 contrast on the backgrounds above and is the one to use for text. */
+    --ui-blue: light-dark(#007aff, #0a84ff);
+    --ui-blue-text: light-dark(#0062cc, #409cff);
+    --ui-green: light-dark(#34c759, #30d158);
+    --ui-green-text: light-dark(#1e7b34, #30db5b);
+    --ui-red: light-dark(#ff3b30, #ff453a);
+    --ui-red-text: light-dark(#d70015, #ff6961);
+    --ui-orange: light-dark(#ff9500, #ff9f0a);
+    --ui-orange-text: light-dark(#b34700, #ffb340);
+    --ui-yellow: light-dark(#ffcc00, #ffd60a);
+    --ui-yellow-text: light-dark(#8a5a00, #ffd426);
+    --ui-purple: light-dark(#af52de, #bf5af2);
+    --ui-purple-text: light-dark(#8944ab, #da8fff);
+    --ui-gray: #8e8e93;
+
+    /* The accent drives selection, links and primary actions */
+    --ui-accent: var(--ui-blue);
+    --ui-accent-text: var(--ui-blue-text);
+    --ui-on-accent: #ffffff;
+    --ui-accent-soft: color-mix(in srgb, var(--ui-accent) 16%, transparent);
+    --ui-red-soft: color-mix(in srgb, var(--ui-red) 16%, transparent);
+
+    /* ---- Materials: translucent layers for controls that float above content ---- */
+    --ui-material: light-dark(rgb(255 255 255 / .72), rgb(30 30 32 / .68));
+    --ui-material-thick: light-dark(rgb(250 250 252 / .88), rgb(38 38 41 / .86));
+    --ui-material-blur: blur(28px) saturate(180%);
+    /* Menus sit on text-heavy content, so they are nearly opaque to stay legible */
+    --ui-material-menu: light-dark(rgb(252 252 254 / .96), rgb(44 44 46 / .96));
+    --ui-material-edge: inset 0 0 0 .5px light-dark(rgb(0 0 0 / .08), rgb(255 255 255 / .14));
+    --ui-scrim: light-dark(rgb(0 0 0 / .28), rgb(0 0 0 / .52));
+
+    /* ---- Elevation ---- */
+    --ui-shadow-1: 0 1px 2px rgb(0 0 0 / .08), 0 2px 8px rgb(0 0 0 / .06);
+    --ui-shadow-2: 0 4px 14px rgb(0 0 0 / .12), 0 12px 40px rgb(0 0 0 / .16);
+    --ui-shadow-3: 0 12px 28px rgb(0 0 0 / .2), 0 28px 80px rgb(0 0 0 / .28);
+
+    /* ---- Typography ----
+       System fonts only: San Francisco and New York on Apple devices, the platform's own
+       elsewhere. Sizes are in rem so they follow the reader's text size setting. */
+    --ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --ui-font-rounded: ui-rounded, "SF Pro Rounded", var(--ui-font);
+    --ui-font-serif: ui-serif, "New York", "Iowan Old Style", Georgia, serif;
+    --ui-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    /* Large titles use the serif, as a reading app; body and controls stay sans-serif */
+    --ui-font-title: var(--ui-font-serif);
+
+    --ui-text-large-title: 700 2.125rem/1.2 var(--ui-font-title);  /* 34 */
+    --ui-text-title-1: 700 1.75rem/1.21 var(--ui-font-title);      /* 28 */
+    --ui-text-title-2: 700 1.375rem/1.27 var(--ui-font);           /* 22 */
+    --ui-text-title-3: 600 1.25rem/1.25 var(--ui-font);            /* 20 */
+    --ui-text-headline: 600 1.0625rem/1.29 var(--ui-font);         /* 17 */
+    --ui-text-body: 400 1.0625rem/1.29 var(--ui-font);             /* 17 */
+    --ui-text-callout: 400 1rem/1.31 var(--ui-font);               /* 16 */
+    --ui-text-subheadline: 400 .9375rem/1.33 var(--ui-font);       /* 15 */
+    --ui-text-footnote: 400 .8125rem/1.38 var(--ui-font);          /* 13 */
+    --ui-text-caption: 400 .75rem/1.33 var(--ui-font);             /* 12 */
+
+    /* ---- Spacing: multiples of 4 ---- */
+    --ui-space-1: .25rem;
+    --ui-space-2: .5rem;
+    --ui-space-3: .75rem;
+    --ui-space-4: 1rem;
+    --ui-space-5: 1.25rem;
+    --ui-space-6: 1.5rem;
+    --ui-space-8: 2rem;
+    --ui-space-10: 2.5rem;
+    --ui-space-12: 3rem;
+    --ui-page-margin: clamp(1rem, 3vw, 2rem);
+
+    /* ---- Shape ---- */
+    --ui-radius-xs: 6px;
+    --ui-radius-sm: 8px;
+    --ui-radius-md: 12px;
+    --ui-radius-lg: 16px;
+    --ui-radius-xl: 22px;
+    --ui-radius-pill: 999px;
+
+    /* ---- Controls ----
+       Pointer devices get compact controls; touch devices get the 44 pt minimum target. */
+    --ui-control-height: 2.25rem;
+    --ui-control-height-sm: 1.75rem;
+    --ui-control-height-lg: 3.125rem;
+    --ui-row-height: 2.75rem;
+    --ui-hit-target: 2.75rem;
+
+    /* ---- Motion ---- */
+    --ui-ease: cubic-bezier(.2, .8, .2, 1);
+    --ui-duration-fast: .12s;
+    --ui-duration: .25s;
+    --ui-duration-slow: .4s;
+
+    --ui-z-toolbar: 100;
+    --ui-z-menu: 300;
+    --ui-z-sheet: 400;
+    --ui-z-toast: 500;
+}
+
+:root[data-appearance="light"] {
+    color-scheme: light;
+}
+
+:root[data-appearance="dark"] {
+    color-scheme: dark;
+}
+
+@media (pointer: coarse) {
+    :root {
+        --ui-control-height: 2.75rem;
+        --ui-control-height-sm: 2.75rem;
+    }
+}
+
+@media (prefers-contrast: more) {
+    :root {
+        --ui-label-secondary: light-dark(rgb(60 60 67 / .9), rgb(235 235 245 / .86));
+        --ui-label-tertiary: light-dark(rgb(60 60 67 / .78), rgb(235 235 245 / .72));
+        --ui-separator: light-dark(rgb(60 60 67 / .5), rgb(160 160 168 / .7));
+        --ui-blue-text: light-dark(#0040dd, #409cff);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --ui-material: var(--ui-bg-secondary);
+        --ui-material-thick: var(--ui-bg-secondary);
+        --ui-material-menu: var(--ui-bg-tertiary);
+        --ui-material-blur: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --ui-duration-fast: .01ms;
+        --ui-duration: .01ms;
+        --ui-duration-slow: .01ms;
+    }
+}

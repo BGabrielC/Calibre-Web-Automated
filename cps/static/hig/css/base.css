@@ -1,0 +1,145 @@
+/*
+ * Base styles for the redesigned interface. Element rules apply only inside .ui-root,
+ * so legacy pages that still load Bootstrap and caliBlur are left alone.
+ */
+
+.ui-root {
+    margin: 0;
+    background: var(--ui-bg);
+    color: var(--ui-label);
+    font: var(--ui-text-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    accent-color: var(--ui-accent);
+}
+
+.ui-root--grouped {
+    background: var(--ui-bg-grouped);
+}
+
+.ui-root *,
+.ui-root *::before,
+.ui-root *::after {
+    box-sizing: border-box;
+}
+
+.ui-root :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+    margin: 0;
+}
+
+.ui-root :where(ul, ol)[class] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ui-root :where(a) {
+    color: var(--ui-accent-text);
+    text-decoration: none;
+}
+
+.ui-root :where(a:hover) {
+    text-decoration: underline;
+}
+
+.ui-root :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+.ui-root :where(img, svg, video) {
+    display: block;
+    max-width: 100%;
+}
+
+.ui-root :where(hr) {
+    height: 0;
+    margin: var(--ui-space-4) 0;
+    border: 0;
+    border-top: .5px solid var(--ui-separator);
+}
+
+.ui-root :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ui-accent) 70%, transparent);
+    outline-offset: 2px;
+}
+
+.ui-root ::selection {
+    background: color-mix(in srgb, var(--ui-accent) 32%, transparent);
+}
+
+/* ---- Text styles ---- */
+
+.ui-large-title { font: var(--ui-text-large-title); letter-spacing: -.01em; }
+.ui-title-1 { font: var(--ui-text-title-1); letter-spacing: -.005em; }
+.ui-title-2 { font: var(--ui-text-title-2); }
+.ui-title-3 { font: var(--ui-text-title-3); }
+.ui-headline { font: var(--ui-text-headline); }
+.ui-body { font: var(--ui-text-body); }
+.ui-callout { font: var(--ui-text-callout); }
+.ui-subheadline { font: var(--ui-text-subheadline); }
+.ui-footnote { font: var(--ui-text-footnote); }
+.ui-caption { font: var(--ui-text-caption); }
+
+.ui-secondary { color: var(--ui-label-secondary); }
+.ui-tertiary { color: var(--ui-label-tertiary); }
+.ui-mono { font-family: var(--ui-font-mono); }
+.ui-numeric { font-variant-numeric: tabular-nums; }
+
+.ui-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ui-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---- Icons: Lucide symbols referenced from the sprite ---- */
+
+.ui-icon {
+    flex: none;
+    width: 1.25em;
+    height: 1.25em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.ui-icon--sm { width: 1em; height: 1em; }
+.ui-icon--lg { width: 1.75em; height: 1.75em; stroke-width: 1.75; }
+
+/* ---- Layout helpers ---- */
+
+.ui-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-stack-gap, var(--ui-space-4));
+}
+
+.ui-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-cluster-gap, var(--ui-space-2));
+}
+
+.ui-spacer {
+    flex: 1;
+}
+
+/* Text columns stay readable on wide windows */
+.ui-readable {
+    max-width: 44rem;
+    margin-inline: auto;
+}

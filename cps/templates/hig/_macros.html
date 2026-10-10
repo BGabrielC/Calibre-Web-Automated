@@ -1,0 +1,13 @@
+{# Shared helpers for redesigned templates: {% from "hig/_macros.html" import icon %} #}
+
+{% macro icon(name, class='') -%}
+<svg class="ui-icon{% if class %} {{ class }}{% endif %}" aria-hidden="true"><use href="{{ url_for('static', filename='hig/icons/sprite.svg') }}#{{ name }}"></use></svg>
+{%- endmacro %}
+
+{# Stylesheets and script every redesigned page needs, in order #}
+{% macro assets() -%}
+<link rel="stylesheet" href="{{ url_for('static', filename='hig/css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='hig/css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='hig/css/components.css') }}">
+<script src="{{ url_for('static', filename='hig/js/ui.js') }}" data-sprite="{{ url_for('static', filename='hig/icons/sprite.svg') }}"></script>
+{%- endmacro %}

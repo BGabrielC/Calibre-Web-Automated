@@ -192,13 +192,12 @@
 
   {# Flashed messages become toasts. Plain ones dismiss themselves; the ones with a link wait. #}
   {% set flash_tones = {'error': 'error', 'warning': 'warning', 'success': 'success', 'info': 'info', 'cwa_refresh': 'info',
-                        'cwa_update': 'info', 'duplicate_scan_setup': 'info', 'cwa_arch_warning': 'error',
-                        'translation_missing': 'info', 'theme_migration': 'info'} %}
+                        'duplicate_scan_setup': 'info', 'cwa_arch_warning': 'error'} %}
   {% set flash_icons = {'error': 'circle-x', 'warning': 'triangle-alert', 'success': 'circle-check', 'info': 'info'} %}
   <div class="ui-toast-region" role="status" aria-live="polite">
     {% for category, message in get_flashed_messages(with_categories=True) if category in flash_tones %}
     {% set tone = flash_tones[category] %}
-    {% set sticky = category in ['cwa_update', 'duplicate_scan_setup', 'cwa_arch_warning', 'translation_missing'] %}
+    {% set sticky = category in ['duplicate_scan_setup', 'cwa_arch_warning'] %}
     <div class="ui-toast ui-toast--{{ tone }}{% if sticky %} ui-toast--sticky{% endif %}" id="flash_{{ 'danger' if tone == 'error' else tone }}"{% if not sticky %} data-ui-autodismiss{% endif %}>
       {{ icon(flash_icons[tone]) }}
       <span>{{ message }}

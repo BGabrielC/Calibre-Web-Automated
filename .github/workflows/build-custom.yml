@@ -6,7 +6,6 @@ on:
       - custom
     paths-ignore:
       - '**.md'
-      - 'changelogs/**'
   workflow_dispatch:
 
 concurrency:

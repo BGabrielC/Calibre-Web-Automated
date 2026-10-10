@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "calibre-web-automated"
 description = "Calibre-Web but Automated and with Many New Features! Fully automate and simplify your eBook set up!"
 authors = [{name = "CrocodileStick", email = "crocodilestick@users.noreply.github.com"}]
-maintainers = [{name = "CrocodileStick"}]
+maintainers = [{name = "Gabriel Cutas"}]
 license = {text = "GPLv3+"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -64,11 +64,8 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/crocodilestick/Calibre-Web-Automated"
-"Bug Tracker" = "https://github.com/crocodilestick/Calibre-Web-Automated/issues"
-"Release Management" = "https://github.com/crocodilestick/Calibre-Web-Automated/releases"
-Documentation = "https://github.com/crocodilestick/Calibre-Web-Automated/wiki"
-"Source Code" = "https://github.com/crocodilestick/Calibre-Web-Automated"
+Homepage = "https://github.com/BGabrielC/Calibre-Web-Automated"
+"Source Code" = "https://github.com/BGabrielC/Calibre-Web-Automated"
 
 [project.optional-dependencies]
 gdrive = [

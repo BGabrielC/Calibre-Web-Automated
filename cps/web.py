@@ -498,9 +498,10 @@ def render_books_list(data, sort_param, book_id, page):
                                                                 db.Series)
 
         try:
-            title = _(f'Books ({pagination.total_count})')
+            # Translate the word, then add the count: a string with the number already in it has no translation
+            title = f"{_('Books')} ({pagination.total_count})"
         except:
-            title = _(f'Books ({cwa_get_num_books_in_library()})')
+            title = f"{_('Books')} ({cwa_get_num_books_in_library()})"
 
         return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                      title=title, page=website, order=order[1])
@@ -1572,7 +1573,7 @@ def author_list():
             .group_by(text('books_authors_link.author')).order_by(order).all()
         char_list = query_char_list(db.Authors.sort, db.books_authors_link)
         return render_title_template('list.html', entries=entries, folder='web.books_list', charlist=char_list,
-                                     title="Authors", page="authorlist", data='author', order=order_no)
+                                     title=_("Authors"), page="authorlist", data='author', order=order_no)
     else:
         abort(404)
 
@@ -2663,7 +2664,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      magic_shelf_order_string=magic_shelf_order_string,
                                      magic_shelf_order_labels=magic_shelf_order_labels,
                                      magic_shelf_order_mode=magic_shelf_order_mode,
-                                     title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
+                                     title=_("%(name)s's Profile", name=current_user.name.capitalize()),
                                      page="me",
                                      kobo_support=kobo_support,
                                      hardcover_support=hardcover_support,
@@ -2791,7 +2792,7 @@ def profile():
                                  magic_shelf_order_string=magic_shelf_order_string,
                                  magic_shelf_order_labels=magic_shelf_order_labels,
                                  magic_shelf_order_mode=magic_shelf_order_mode,
-                                 title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
+                                 title=_("%(name)s's Profile", name=current_user.name.capitalize()),
                                  page="me",
                                  registered_oauth=local_oauth_check,
                                  oauth_status=oauth_status)

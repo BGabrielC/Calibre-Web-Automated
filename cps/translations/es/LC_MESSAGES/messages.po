@@ -7744,3 +7744,6 @@ msgstr "Secciones"
 
 msgid "Skip to content"
 msgstr "Saltar al contenido"
+
+msgid "%(name)s's Profile"
+msgstr "Perfil de %(name)s"
